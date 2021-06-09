@@ -1,0 +1,8 @@
+*.iso
+*.bin
+*.elf
+*.o
+iso/*
+bin/*
+obj/*
+dsm/*

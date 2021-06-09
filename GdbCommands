@@ -1,0 +1,7 @@
+target remote localhost:1234 
+symbol-file bin/javelin.bin
+break _start
+break _fault_handler
+break kernel_main
+break run_task
+continue

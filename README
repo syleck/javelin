@@ -1,0 +1,15 @@
+Javelin. Probably a monolithic kernel.
+
+Requires: nasm, gcc (i686-elf), binuitls (i686-elf)
+
+How to use a_options.txt and c_options.txt:
+
+They work as shell options. a_options is passed to all i686-elf-ar compiled code, c_options is passed to all i686-elf-gcc compiled code (for KernelMakefile).
+
+For example:
+
+c_options.txt:
+
+    -DPANIC_ON_OOPS -DONT_DO_MODULES
+
+compiles the system to panic on oops, and dont use the modules system
