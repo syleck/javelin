@@ -4,29 +4,31 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-typedef struct {
-    char name[16];
-    void* data;
-} jprog_entry;
+#define JPROG_EXECUTABLE 1<<1
+#define JPROG_RELOCATABLE 1<<2
+
+#define JPROG_UNKN 0
+#define JPROG_CODE 1
+#define JPROG_DATA 2
 
 typedef struct {
     char name[16];
+    uint8_t type;
     uint8_t flags;
-    jprog_entry entries[128];
+    uint32_t length;
+    uint32_t offset;
 } jprog_shdr;
 
+#define JPH_SIGNATURE "\xdaJpRoG"
+#define JPH_SHDR_COUNT 32
 typedef struct {
-    char signature[4]; // 0xDA 'j' 'p' 'r'
+    char signature[7]; // 0xDA 'j' 'p' 'r' 'o' 'g' 0x00
+    jprog_shdr shdrs[JPH_SHDR_COUNT];
     char machine_type;
     bool relocatable;
-    jprog_shdr shdrs[3]; // should contain .text, .bss, .data
-    uint32_t reservedA; // incsae if i do any extensions after release
-    uint32_t reservedB;
-    uint32_t reservedC;
+    char license[16];
+    char author[32];
+    char contact[32];
 } jprog_hdr;
-
-
-
-
 
 #endif

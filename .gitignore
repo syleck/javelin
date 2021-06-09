@@ -1,6 +1,7 @@
 *.iso
 *.bin
 *.elf
+*.jpr
 *.o
 iso/*
 bin/*
