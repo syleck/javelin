@@ -99,28 +99,28 @@ _irq15:
 extern _irq_handler
 
 irq_common_stub:
-        pusha           ; Pushes edi, esi, ebp, esp, ebx, edx, ecx,
-                        ; eax
+	pusha           ; Pushes edi, esi, ebp, esp, ebx, edx, ecx,
+					; eax
 
-        mov ax, ds      ; Lower 16-bits of eax = ds
-        push eax        ; Save the data segment descriptor
+	mov ax, ds      ; Lower 16-bits of eax = ds
+	push eax        ; Save the data segment descriptor
 
-        mov ax, 0x10    ; Load the kernel data segment descriptor
-        mov ds, ax
-        mov es, ax
-        mov fs, ax
-        mov gs, ax
+	mov ax, 0x10    ; Load the kernel data segment descriptor
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
 
-        call _irq_handler
+	call _irq_handler
 
-        pop eax         ; Reload the original data segment descriptor
-        mov ds, ax
-        mov es, ax
-        mov fs, ax
-        mov gs, ax
+	pop eax         ; Reload the original data segment descriptor
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
 
-        popa            ; Pops edi, esi, ebp...
-        add esp, 8      ; Cleans up pushed error code and pushed ISR
-                        ; number.
-        sti
-        iret            ; Pops 5 things at once: CS, EIP, EFLAGS, SS and ESP!
+	popa            ; Pops edi, esi, ebp...
+	add esp, 8      ; Cleans up pushed error code and pushed ISR
+					; number.
+	sti
+	iret            ; Pops 5 things at once: CS, EIP, EFLAGS, SS and ESP!

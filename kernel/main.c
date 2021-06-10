@@ -54,13 +54,12 @@ void kernel_main() {
     outb(0x40, low);
     outb(0x40, high);
 	
-
 	init_keyboard();
 	pci_install();
 	//init_ata_pio();
 	init_random();
-	init_sound();
+	//init_sound();
 	for(;;) {
-		
+		sleep(1);
 	}
 }

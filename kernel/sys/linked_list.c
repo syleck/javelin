@@ -34,5 +34,6 @@ linkedlist* ll_getfirst(linkedlist* entry) {
 }
 
 void ll_destroy(linkedlist* entry) {
-    
+    entry->previous->next = entry->next;
+    entry->next->previous = entry->previous;
 }

@@ -2,6 +2,7 @@
 #include "../asm.h"
 #include "../../module.h"
 #include "irq.h"
+#include "../../sys/scheduler.h"
 
 MODULE("IRQ")
 MODULE_CREATOR("kernelvega");
@@ -92,21 +93,19 @@ void _irq_handler(struct regs r)
 	current_irq = r.int_no;
     switch(r.int_no) {
 		case 0x20:
+			scheduler_yield(&r);
 			ticks++;
-            if (r.int_no >= 40)
-		        outb(0xA0, 0x20);
-            outb(0x20,0x20);
 			break;
         default:   
 			if(handler[r.int_no-0x20].program != 0) {
 				handler[r.int_no-0x20].program(r.int_no);
 			}
-            if (r.int_no >= 40)
-		        outb(0xA0, r.int_no);
-            outb(0x20, r.int_no);
 			mprintf("IRQ: %x\n",r.int_no);
 			OOPS("Unknown IRQ");
             break;
     }
+	if (r.int_no >= 40)
+		outb(0xA0, 0x20);
+	outb(0x20,0x20);
 	current_irq = 0;
 }
