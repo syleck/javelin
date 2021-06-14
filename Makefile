@@ -1,4 +1,4 @@
-javelin.iso: static/grub.cfg static/isoroot/* bin/javelin.bin bin/shell.elf bin/elf2jprog #bin/fsdrv.bin
+javelin.iso: static/grub.cfg static/isoroot/* bin/javelin.bin bin/shell.elf bin/elf2jprog
 	rm -rf iso
 	mkdir -p iso/boot/grub
 	mkdir -p iso/bin

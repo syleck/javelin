@@ -4,5 +4,6 @@
 
 void scheduler_yield(struct regs *regs);
 void scheduler_init(struct regs *kregs);
+void printsched();
 
 #endif

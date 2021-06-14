@@ -11,11 +11,15 @@ _multiboot_header:
 	.long ARCH
 	.long _multiboot_header - _multiboot_end
 	.long -(MAGIC + ARCH + (_multiboot_header - _multiboot_end))
-_multiboot_end:
+
+
+.align 8
+
 _terminating_multiboot_tag:
 	.word 0
 	.word 0
 	.long 8
+_multiboot_end:
 
 .section .bss
 .align 16
@@ -30,6 +34,8 @@ _start:
 	mov $stack_top,%esp
 	xor %ebp, %ebp
 	mov $EBP_FIELD,%ebp
+	push %ebx
+	push %eax
 	call kernel_main
 	cli
 1:	hlt

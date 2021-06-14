@@ -2,7 +2,8 @@
 #include "x86/task.h"
 #include "x86/int/isr.h"
 #include "x86/int/irq.h"
-#include "x86/bits16/v86.h"
+#include "x86/bits16/bios.h"
+#include "x86/boot/grub.h"
 #include "x86/idt.h"
 #include "x86/asm.h"
 #include "fs/fs.h"
@@ -25,14 +26,11 @@ MODULE_CREATOR("kernelvega");
 MODULE_CONTACT("watergatchi@protonmail.com");
 MODULE_LICENSE("AGPL");
 
-extern int* _SOUNDTEST_START;
-extern int* _SOUNDTEST_END;
-
-void kernel_main() {
+void kernel_main(uint32_t eax, uint32_t ebx) {
 	init_tty();
 	init_serial();
 	init_bochs();
-	printf("Javelin kernel revision 2\n");
+	printf("Javelin kernel revision 2, built at %s\n",DATE);
 	printf("Special flags: ");
 	#ifdef PANIC_ON_OOPS
 	printf("PANIC_ON_OOPS ");
@@ -59,6 +57,9 @@ void kernel_main() {
 	//init_ata_pio();
 	init_random();
 	//init_sound();
+	multiboot_init(eax,ebx);
+	
+	asm("sti");
 	for(;;) {
 		sleep(1);
 	}

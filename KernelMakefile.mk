@@ -5,6 +5,8 @@ KERNEL_DISASMS := $(KERNEL_DISASM:%=dsm/%.s)
 TARGET_OBJECT  := javelin.bin
 TARGET_DIR     := bin
 KERNELBUILD_ID := $(shell tr -dc A-Za-z </dev/urandom | head -c 13 ; echo '')
+BUILDDATE      := $(shell date)
+DEFINES        := -DDATE="\"$(BUILDDATE)\""
 
 .PHONY: all
 all: $(TARGET_DIR)/$(TARGET_OBJECT)
@@ -31,12 +33,12 @@ obj/%.s.o: %.s a_options.txt KernelLink.ld
 
 dsm/%.c.s: %.c
 	@$(MKDIR_P) $(dir $@)
-	@i686-elf-gcc -S $(shell cat c_options.txt) $(CFLAGS) -c $< -o $@ -std=gnu99 -ffreestanding -O2 -Wall -Wextra
+	@i686-elf-gcc -S $(shell cat c_options.txt) $(CFLAGS) $(DEFINES) -c $< -o $@ -std=gnu99 -ffreestanding -O2 -Wall -Wextra
 	@echo "parsing $<"
 
 obj/%.c.o: %.c c_options.txt KernelLink.ld 
 	@$(MKDIR_P) $(dir $@)	
-	@i686-elf-gcc $(shell cat c_options.txt) $(CFLAGS) -c $< -o $@ -std=gnu99 -ffreestanding -O2 -Wall -Wextra
+	@i686-elf-gcc $(shell cat c_options.txt) $(CFLAGS) $(DEFINES) -c $< -o $@ -std=gnu99 -ffreestanding -O2 -Wall -Wextra
 	@echo "cc $<"
 
 .PHONY: clean

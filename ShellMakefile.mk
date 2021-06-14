@@ -3,6 +3,8 @@ SHELL_OBJECTS := $(SHELL_SOURCES:%=obj/%.o)
 TARGET_OBJECT  := jsh.elf
 TARGET_DIR     := bin
 SHELLBUILD_ID := $(shell tr -dc A-Za-z </dev/urandom | head -c 13 ; echo '')
+BUILDDATE      := $(shell date)
+DEFINES        := -DDATE="\"$(BUILDDATE)\""
 
 .PHONY: all
 all: $(TARGET_DIR)/$(TARGET_OBJECT)
@@ -20,12 +22,12 @@ obj/%.asm.o: %.asm n_options.txt
 
 obj/%.s.o: %.s a_options.txt 
 	@$(MKDIR_P) $(dir $@)
-	@i686-elf-as $(shell cat a_options.txt) -fpic $(AFLAGS) -c $< -o $@
+	@i686-elf-as $(shell cat a_options.txt) -fpic $(AFLAGS) $(DEFINES) -c $< -o $@
 	@echo "as (at&t ) $<"
 
 obj/%.c.o: %.c c_options.txt 
 	@$(MKDIR_P) $(dir $@)
-	@i686-elf-gcc $(shell cat c_options.txt) -fpic $(CFLAGS) -Q -fstack-usage -c $< -o $@ -std=gnu99 -ffreestanding -O2 -Wall -Wextra
+	@i686-elf-gcc $(shell cat c_options.txt) -fpic $(CFLAGS) $(DEFINES) -Q -fstack-usage -c $< -o $@ -std=gnu99 -ffreestanding -O2 -Wall -Wextra
 	@echo "cc $<"
 
 .PHONY: clean

@@ -36,6 +36,7 @@
         "*.tcc": "cpp",
         "new": "cpp",
         "adlib.h": "c",
-        "elf.h": "c"
+        "elf.h": "c",
+        "v86.h": "c"
     }
 }
