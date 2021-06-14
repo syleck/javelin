@@ -15,3 +15,21 @@ c_options.txt:
 compiles the system to panic on oops, and dont use the modules system
 
 All code unless stated otherwise is licensed under the AGPL.
+
+COMPILATION:
+
+    make
+
+generates javelin.iso
+
+    make -j4 -f KernelMakefile.mk
+
+generates bin/javelin.bin 
+
+    make -j4 -f ShellMakefile.mk 
+
+generates bin/jsh.elf
+
+    make -j4 -f Elf2JprogMake.mk
+
+generates bin/elf2jprog
