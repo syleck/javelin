@@ -11,6 +11,11 @@ struct stackframe {
   uint32_t eip;
 };
 
+/**
+ * @brief Traces the stackframe.
+ * 
+ * @param frames Count of frames. If 0, frames = UINT32_MAX.
+ */
 void tracestack(uint32_t frames)
 {
     struct stackframe *stk;

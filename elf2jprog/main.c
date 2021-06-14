@@ -114,6 +114,10 @@ int main(int argc, char** argv) {
                     jph.shdrs[x].flags = JPROG_UNKN;
                     jph.shdrs[x].length = shdr.sh_size;
                     jph.shdrs[x].offset = offset;
+                    jph.shdrs[x].v_begin = 0xB00B1E55;
+                    jph.shdrs[x].v_length = 0xCAFECAFE;
+                    
+                    memcpy(jph.shdrs[x].magic,"SG",2);
                     if(x == 0) {
                         strcpy(jph.shdrs[x].name,"CodeSgmt");
                         jph.shdrs[x].type = JPROG_CODE;
@@ -124,6 +128,9 @@ int main(int argc, char** argv) {
                     fseek(elfIn,shdr.sh_offset,0);
                     fread(textdata,shdr.sh_size,1,elfIn);
                     fwrite(textdata,shdr.sh_size,1,jprOut);
+                    fgetpos(elfIn,&offset);
+                    
+
                     free(textdata);
                     current++;
                     x++;

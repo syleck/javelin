@@ -13,6 +13,7 @@ uint32_t sysarg[128];
 
 int do_syscall(struct regs* r) {
     asm("cli");
+    uint32_t* dp;
     switch(r->eax) {
     case 0: // clearscreen
         tty_clear();
@@ -27,9 +28,9 @@ int do_syscall(struct regs* r) {
         r->ebx = sysarg[r->ecx];
         break;
     case 4: // load sysargs from memory, edx=addr, ebx=length, ecx=offset
-        uint32_t* smn = (uint32_t*)r->edx;
+        dp = (uint32_t*)r->edx;
         for(int i = 0; i < r->ebx; i++) {
-            sysarg[i+r->ecx] = *(smn+=sizeof(uint32_t));
+            sysarg[i+r->ecx] = *(dp+=sizeof(uint32_t));
         }
         break;
     default:

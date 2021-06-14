@@ -39,6 +39,13 @@ int get_id_from_alloc(void* address) {
     }
 }
 
+/**
+ * @brief Allocates a region of memory. Used internally because mem.h defines malloc(size) and automatically manages modules.
+ * 
+ * @param size Size (in bytes) of data to allocate.
+ * @param module Name of module.
+ * @return void* Address of memory allocated.
+ */
 void* kmalloc(size_t size, char* module) {
     void* address = MEMORY_START;
     for(int i = 0; i < 8192; i++) {

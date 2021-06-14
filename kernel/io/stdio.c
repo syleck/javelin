@@ -14,6 +14,13 @@ io_struct* ser_handle = 0;
 io_struct* lpt_handle = 0;
 io_struct* bochs_handle = 0;
 
+/**
+ * @brief Base printing function. Handles io_struct output, va_lists, and format.
+ * 
+ * @param handle Struct to output to (ex. tty_handle)
+ * @param fmt Format of string.
+ * @param varg va_list object.
+ */
 void vfprintf(io_struct* handle, const char* fmt, va_list varg) {
     if(handle == 0)
         return;
@@ -74,6 +81,13 @@ void vfprintf(io_struct* handle, const char* fmt, va_list varg) {
     update_cursor(terminal_col,terminal_row);
 }
 
+/**
+ * @brief Simplifies vfprintf.
+ * 
+ * @param output Refer to stdio_***_out.
+ * @param fmt Format of string.
+ * @param varg Va_list of arguments.
+ */
 void vsprintf(int output, const char* fmt, va_list varg) {
     io_struct* handle = tty_handle;
     switch(output) {
@@ -93,6 +107,12 @@ void vsprintf(int output, const char* fmt, va_list varg) {
     vfprintf(handle, fmt, varg);
 }
 
+/**
+ * @brief Prints out a string.
+ * 
+ * @param fmt Format of string.
+ * @param ... Array of elements to be used in the format.
+ */
 void printf(const char* fmt,...) {
     va_list va;
     va_start(va,fmt);
@@ -100,6 +120,13 @@ void printf(const char* fmt,...) {
     va_end(va);
 }
 
+/**
+ * @brief Prints out a string to another io_struct.
+ * 
+ * @param handle Handle of io_struct.
+ * @param fmt Format of string.
+ * @param ... Array of elements to be used in the format.
+ */
 void fprintf(io_struct* handle, const char* fmt,...) {
     va_list va;
     va_start(va,fmt);
