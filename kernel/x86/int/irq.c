@@ -16,10 +16,10 @@ struct {
 
 uint64_t ticks = 0;
 
-void sleep(int ms) {
+void sleep(float ms) {
 	asm("sti");
-	ms = ms + ticks;
-	while(ticks != ms) {
+	ms = ticks + (ms * 10);
+	while(ticks >= ms) {
 		asm("nop");
 	}
 }

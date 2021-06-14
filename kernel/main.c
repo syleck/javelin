@@ -30,7 +30,7 @@ void kernel_main(uint32_t eax, uint32_t ebx) {
 	init_tty();
 	init_serial();
 	init_bochs();
-	printf("Javelin kernel revision 2, built at %s\n",DATE);
+	printf("Javelin kernel revision 2, built at %s\n",__DATE__);
 	printf("Special flags: ");
 	#ifdef PANIC_ON_OOPS
 	printf("PANIC_ON_OOPS ");
@@ -45,13 +45,14 @@ void kernel_main(uint32_t eax, uint32_t ebx) {
 	irq_install();
 
 	// do pit init here cause im lazy to make another file
-	uint16_t divisor = (uint16_t) (1193180 / 1000); // 1000Hz will make the PIT fire IRQ #0 every 1ms
+	uint16_t divisor = (uint16_t) (1193180 / 100); // 100Hz will make the PIT fire IRQ #0 every .1ms
     uint8_t low = (uint8_t) (divisor & 0xFF);
     uint8_t high = (uint8_t) ((divisor >> 8) & 0xFF);
 	outb(0x43, 0x36);
     outb(0x40, low);
     outb(0x40, high);
 	
+
 	init_keyboard();
 	pci_install();
 	//init_ata_pio();

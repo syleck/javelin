@@ -13,3 +13,5 @@ c_options.txt:
     -DPANIC_ON_OOPS -DONT_DO_MODULES
 
 compiles the system to panic on oops, and dont use the modules system
+
+All code unless stated otherwise is licensed under the AGPL.

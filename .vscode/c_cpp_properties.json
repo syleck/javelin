@@ -11,8 +11,7 @@
             "cppStandard": "c++14",
             "intelliSenseMode": "linux-clang-x64",
             "compilerArgs": [
-                "-DDATE date",
-                "-m32"
+                "-D__DATE__=\"0\""
             ]
         }
     ],

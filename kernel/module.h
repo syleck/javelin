@@ -27,18 +27,18 @@ int panic(char* reason);
 #endif
 
 #ifndef ONT_DO_MODULES
-#define PANIC(why) { mprintf("***Kernel panic***\nfile: %s\nln: %i\nfunction: %s\nreason: %s ... hang on in there\n\nbuild date:%s\n", __FILE__, __LINE__, __func__, why, DATE); mdumpd(); panic(why); }
+#define PANIC(why) { mprintf("***Kernel panic***\nfile: %s\nln: %i\nfunction: %s\nreason: %s ... hang on in there\n\nbuild __DATE__:%s\n", __FILE__, __LINE__, __func__, why, __DATE__); mdumpd(); panic(why); }
 #ifdef PANIC_ON_OOPS
 #define OOPS(why) { mputs("Oops detected, panicing instead\n"); PANIC(why); }
 #else
-#define OOPS(why) { mprintf("***Kernel oops (undefined behaviour ahead)***\nfile: %s\nln: %i\nfunction: %s\nreason: %s\n\nbuild date:%s\n", __FILE__, __LINE__, __func__, why, DATE); mdumpd(); }
+#define OOPS(why) { mprintf("***Kernel oops (undefined behaviour ahead)***\nfile: %s\nln: %i\nfunction: %s\nreason: %s\n\nbuild __DATE__:%s\n", __FILE__, __LINE__, __func__, why, __DATE__); mdumpd(); }
 #endif
 #else
-#define PANIC(why) { mprintf("***Kernel panic***\nfile: %s\nln: %i\nfunction: %s\nreason: %s ... hang on in there\n\nbuild date:%s\n", __FILE__, __LINE__, __func__, why, DATE); panic(why); }
+#define PANIC(why) { mprintf("***Kernel panic***\nfile: %s\nln: %i\nfunction: %s\nreason: %s ... hang on in there\n\nbuild __DATE__:%s\n", __FILE__, __LINE__, __func__, why, __DATE__); panic(why); }
 #ifdef PANIC_ON_OOPS
 #define OOPS(why) { mputs("Oops detected, panicing instead\n"); PANIC(why); }
 #else
-#define OOPS(why) { mprintf("***Kernel oops (undefined behaviour ahead)***\nfile: %s\nln: %i\nfunction: %s\nreason: %s\n\nbuild date:%s\n", __FILE__, __LINE__, __func__, why, DATE); }
+#define OOPS(why) { mprintf("***Kernel oops (undefined behaviour ahead)***\nfile: %s\nln: %i\nfunction: %s\nreason: %s\n\nbuild __DATE__:%s\n", __FILE__, __LINE__, __func__, why, __DATE__); }
 #endif
 #endif
 

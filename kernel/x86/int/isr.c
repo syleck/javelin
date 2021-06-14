@@ -5,6 +5,7 @@
 #include "isr.h"
 #include "irq.h"
 #include "../../sys/stacktrace.h"
+#include "../../sys/syscall.h"
 #include <stdbool.h>
 
 MODULE("ISR")
@@ -87,14 +88,17 @@ void isr_install()
 }
 
 bool state = false;
+extern uint64_t ticks;
 void dump_regs(struct regs r) {
 	mprintf("eax %x ebx %x ecx %x edx %x\n",r.eax,r.ebx,r.ecx,r.edx);
 	mprintf("esi %x esp %x ebp %x edi %x\n",r.esi,r.esp,r.ebp,r.edi);
 	mprintf("err_code %x int_no %x eip %x eflags %b\n",r.err_code,r.int_no,r.eip,r.eflags);
 	mprintf("cs %x ds %x\n",r.cs,r.ds);
+	mprintf("%i ticks since boot\n",ticks);
 	if(state)
 		mputs("Doing a system interrupt (0x50 | 0x80)\n");
 }
+
 
 void _fault_handler(struct regs r)
 {
@@ -113,18 +117,7 @@ void _fault_handler(struct regs r)
 		case 0x80:
 		case 0x50:
 			state = true;
-			switch(r.eax) {
-				case 0: // clearscreen
-					tty_clear();
-					break;
-				case 1: // VPRINTF
-					vprintf((const char*)r.ecx,(va_list*)r.ebx);
-					break;
-				default:
-					dump_regs(r);
-					PANIC("Bad system interrupt");
-					break;
-			}
+			r.eax = do_syscall(&r);
 			state = false;
 			break;
 		default:

@@ -4,7 +4,7 @@
 #include <stdbool.h>
 
 void irq_install();
-void sleep(int ms);
+void sleep(float ms);
 void set_irq(void (*program)(int), int id);
 int get_irqc();
 
