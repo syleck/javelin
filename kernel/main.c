@@ -19,6 +19,7 @@
 #include "drv/adlib.h"
 #include "drv/sb16.h"
 #include "fs/iso9660.h"
+#include "injen/injen.h"
 #include "module.h"
 
 MODULE("KERNEL");
@@ -51,7 +52,6 @@ void kernel_main(uint32_t eax, uint32_t ebx) {
 	outb(0x43, 0x36);
     outb(0x40, low);
     outb(0x40, high);
-	
 
 	init_keyboard();
 	pci_install();
@@ -59,6 +59,11 @@ void kernel_main(uint32_t eax, uint32_t ebx) {
 	init_random();
 	//init_sound();
 	multiboot_init(eax,ebx);
+
+	parse_string(  "#!/injen main\n"
+				   "poop\n"
+				   "crap"
+	,"main");
 	
 	asm("sti");
 	for(;;) {

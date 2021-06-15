@@ -44,3 +44,6 @@ bin/elf2jprog: FORCE
 
 .PHONY: FORCE
 FORCE:
+
+docs:
+	doxygen

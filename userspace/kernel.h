@@ -6,7 +6,12 @@
 
 #define KERNEL_INTERRUPT 0x80
 
-// Use function 1 to print a string
+/**
+ * @brief Printf (Userspace edition)
+ * 
+ * @param fmt Format of string
+ * @param ... Arguments to put in format
+ */
 static void printf(const char* fmt,...) {
     va_list ap;
     va_start(ap,fmt);

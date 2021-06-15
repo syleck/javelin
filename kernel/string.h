@@ -32,6 +32,7 @@ size_t str_begins_with(const char* str, const char* with);
 size_t str_backspace(char* str, char c);
 size_t strcount(char* str, char c);
 size_t strsplit(char* str, char delim);
+char *strtok (char *s, const char *delim);
 
 void itoa(unsigned i,unsigned base,char* buf);
 void itoa_s(int i,unsigned base,char* buf);
