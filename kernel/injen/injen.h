@@ -1,5 +1,7 @@
 #ifndef INJEN_H
 #define INJEN_H
+#include <stdint.h>
+#include <stdbool.h>
 
 /**
  * @brief Create a instance. Call switch_instance(instance) to switch to it.
@@ -26,59 +28,36 @@ void compile_instance();
  * @param name Name of data.
  */
 void load_instance_data(char* data, char* name);
-
 /**
- * @brief Tokens for Injen.
- * Im not working on this right now, more of working on the VM. Someone else help with the lexer
- * Format for lexer should be
- * [TOKEN_INSTR] [TOKEN_DST],[TOKEN_SRC]\n
+ * @brief Executes the instance.
+ * 
  */
-enum injen_token {
-    // Move, Dst <- Src
-    Mov,
-    // Alloc, Member Dst <- Src
-    Alc,
-    // Add, Dst += Src
-    Add,
-    // Sub, Dst -= Src
-    Sub,
-    // Mul, Dst *= Src
-    Mul,
-    // Div, Dst /= Src
-    Div,
-    // Mod, Dst %= Src
-    Mod,
-    // Inc, Dst++
-    Inc,
-    // Dec, Dst--
-    Dec,
-    // Call, Dst + Src
-    Call,
-    // Jmp, Dst + Src
-    Jmp,
-    // Cmp, Dst (compare) Src
-    Cmp,
-    // Jump if Equal
-    Je,
-    // Jump if Not Equal
-    Jne,
-    // Jump if Status Bit (Dst)
-    Jsb,
-    // Reference to Variable ($<variable name>)
-    RefVariable,
-    // Reference to Register (%<register name>)
-    RefRegister,
-    // Number (0, 1, 2, etc)
-    Number,
-};
+int eval_instance();
+/**
+ * @brief Tells the lexer to compile a string.
+ * 
+ * @param size Outputted size of data
+ * @param code Code itself
+ * @return void* Where the compiled data is
+ */
+void* asmcompile(int* size, char* code);
+/**
+ * @brief Converts an instruction to its name.
+ * 
+ * @param i Instruction.
+ * @return const char* Name.
+ */
+const char* instoname(int i);
 
 /**
  * @brief Register names
  * 
  */
 enum injen_register {
+    Address_0 = 0, Address_1, Address_2, Address_3, Address_4,
     Register_0 = 45, Register_1, Register_2, Register_3, Register_4,
     Register_Bp = 99, Register_Sp, Register_Ip,
+    Cpu2prog_Lf0 = 250, Cpu2prog_Lf1,
 };
 
 /**
@@ -88,20 +67,51 @@ enum injen_register {
 enum injen_instruction {
     Halt, Noop,
     // mov instructions
-    MovRegImm, MovRegReg,
+    MovRegImm = 55, MovRegReg,
     MovMRegImm, MovMImm, MovMReg,
     MovMRegReg,
+    PushImm,
+    PushReg,
+    PopReg,
     // math instructions
-    IncReg, IncRegStep, DecReg, DecRegStep,
+    IncReg = 128, IncRegStep, DecReg, DecRegStep,
     AddRegImm, SubRegImm, MulRegImm, DivRegImm,
     AddRegReg, SubRegReg, MulRegReg, DivRegReg,
     CmpRegReg, CmpRegImm,
     // flow control
-    CallImm, CallReg,
+    CallImm = 200, CallReg,
     JmpImm, JmpReg,
+    Ret, IRet,
+    // io
+    InRegImm, 
+    InRegReg, 
+    OutImmImm,
+    OutRegImm,
+    OutRegReg,
+    // etc 
+    InjenState = 250,
+    LoadFh,
     // prefixes
-    MovReverse, // only really works on the MRegImm instructions, which tells it to instead move Reg to ImmXX
+    MovReverse = 300, // only really works on the MRegImm instructions and OutRegImm instructions, which tells it to instead move Reg to ImmXX
     OffsetText, OffsetData, OffsetStack // this probably should only be done by this vm, but keep them in anyways for support. they tell the vm that this is offsetted by text, data, or stack (by default its offsetted by data)
 };
+
+// additional functions
+void ivm_dumpregs();
+int injen_in(int* permissions, int address);
+void injen_out(int* permissions, int address, int data);
+void ivm_fault(int faultid, int code);
+
+#define IO_OFFSET 0xFFFF0000
+#define IO_PORT(x) IO_OFFSET+x
+
+typedef struct {
+    uint32_t* ip;
+} ivm_fhentry;
+
+typedef struct {
+    uint32_t address;
+    ivm_fhentry* true_address;
+} ivm_fhdt;
 
 #endif

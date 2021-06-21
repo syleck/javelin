@@ -9,7 +9,7 @@ MODULE_LICENSE("AGPL");
 int panic(char* reason) {
     asm("sti");
     set_state(SYSTEM_PANIC);
-    mputs("Waiting for kickstart\n");
+    mputs("System is in a panicked state\n");
     for(;;) {
 
     }

@@ -132,7 +132,6 @@ void init_serial() {
         outb(COM1 + 4, 0x0F);
         com1_enable = true;
         int d = add_simple_text("ttyS0",serial0);
-        add_alias(get_device(d),"com1");
         add_echo_tty(&serial0);
     }
 
@@ -148,7 +147,7 @@ void init_serial() {
     outb(COM2 + 0, 0xAE);    // Test serial chip (send byte 0xAE and check if serial returns same byte)
 
     if(inb(COM2 + 0) != 0xAE) {
-        
+        mputs("com2 doesnt exist");
     } else {
         outb(COM2 + 4, 0x0F);
         com2_enable = true;

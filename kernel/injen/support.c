@@ -1,0 +1,70 @@
+#include "injen.h"
+
+const char* instoname(int i) {
+    switch(i) {
+        case Halt:
+            return "Halt";
+        case Noop:
+            return "Noop";
+        case MovRegImm:
+            return "MovRegImm";
+        case MovRegReg:
+            return "MovRegReg";
+        case MovMRegImm:
+            return "MovMRegImm";
+        case MovMImm:
+            return "MovMImm";
+        case MovMReg:
+            return "MovMReg";
+        case MovMRegReg:
+            return "MovMRegReg";
+        case IncReg:
+            return "IncReg";
+        case IncRegStep:
+            return "IncRegStep";
+        case DecReg:
+            return "DecReg";
+        case DecRegStep:
+            return "DecRegStep";
+        case AddRegImm:
+            return "AddRegImm";
+        case SubRegImm:
+            return "SubRegImm";
+        case MulRegImm:
+            return "MulRegImm";
+        case DivRegImm:
+            return "DivRegImm";
+        case AddRegReg:
+            return "AddRegReg";
+        case SubRegReg:
+            return "SubRegReg";
+        case MulRegReg:
+            return "MulRegReg";
+        case DivRegReg:
+            return "DivRegReg";
+        case CmpRegReg:
+            return "CmpRegReg";
+        case CmpRegImm:
+            return "CmpRegImm";
+        case CallImm:
+            return "CallImm";
+        case CallReg:
+            return "CallReg";
+        case JmpImm:
+            return "JmpImm";
+        case JmpReg:
+            return "JmpReg";
+        case InjenState:
+            return "InjenState";
+        case MovReverse:
+            return "MovReverse";
+        case OffsetText:
+            return "OffsetText";
+        case OffsetData:
+            return "OffsetData";
+        case OffsetStack:
+            return "OffsetStack";
+        default:
+            return "???";
+    }
+}

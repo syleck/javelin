@@ -1,8 +1,9 @@
 #include "../idt.h"
 #include "../asm.h"
 #include "../../module.h"
-#include "irq.h"
 #include "../../sys/scheduler.h"
+#include "../../sys/state.h"
+#include "irq.h"
 
 MODULE("IRQ")
 MODULE_CREATOR("kernelvega");
@@ -15,6 +16,10 @@ struct {
 } handler[15];
 
 uint64_t ticks = 0;
+
+uint64_t get_ticks() {
+	return ticks;
+}
 
 void sleep(float ms) {
 	asm("sti");
@@ -78,7 +83,7 @@ void irq_install()
 }
 
 void set_irq(void (*program)(int), int id) {
-	mprintf("Set interrupt %i to %x\n",id,program);
+	DVERBOSE(mprintf("Set interrupt %i to %x\n",id,program));
 	handler[id].irq = id;
 	handler[id].program = program;
 }
@@ -93,10 +98,14 @@ void _irq_handler(struct regs r)
 	current_irq = r.int_no;
     switch(r.int_no) {
 		case 0x20:
-			scheduler_yield(&r);
+			if(get_state() == SYSTEM_NORMAL)
+				scheduler_yield(&r);
 			ticks++;
 			break;
         default:   
+			if(get_state() != SYSTEM_NORMAL) {
+				break;
+			}
 			if(handler[r.int_no-0x1f].program != 0) {
 				handler[r.int_no-0x1f].program(r.int_no);
 			}

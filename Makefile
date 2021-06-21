@@ -1,3 +1,5 @@
+QEMUARGS := -d "cpu_reset,guest_errors"
+
 javelin.iso: static/grub.cfg static/isoroot/* bin/javelin.bin bin/shell.elf bin/elf2jprog
 	rm -rf iso
 	mkdir -p iso/boot/grub
@@ -15,12 +17,12 @@ all: javelin.iso
 
 .PHONY: run
 run: javelin.iso
-	qemu-system-x86_64 -serial stdio -serial null -device adlib javelin.iso 
+	qemu-system-i386 $(QEMUARGS) -serial stdio -serial null -device adlib javelin.iso 
 
 .PHONY: debug
 debug: bin/javelin.bin javelin.iso
 	@echo "do gdb -ix GdbCommands to start qemu"
-	qemu-system-x86_64 -serial stdio -serial null -device adlib -s -S javelin.iso
+	qemu-system-i386 $(QEMUARGS) -serial stdio -serial null -device adlib -s -S javelin.iso
 
 .PHONY: bochs
 bochs: javelin.iso

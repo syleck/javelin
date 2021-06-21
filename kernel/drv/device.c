@@ -22,7 +22,7 @@ device_t* alloc_device() {
 }
 
 int add_simple_text(char* name, io_struct io) {
-    mprintf("New text driver: %s\n",name);
+    DVERBOSE(mprintf("New text driver: %s\n",name));
     devices[device].dev_type = DEVICE_TEXT;
     devices[device].io = io;
     devices[device].name = name;
@@ -31,7 +31,7 @@ int add_simple_text(char* name, io_struct io) {
 }
 
 int add_simple_block(char* name, block_device block) {
-    mprintf("New block device: %s\n",name);
+    DVERBOSE(mprintf("New block device: %s\n",name));
     devices[device].dev_type = DEVICE_DRIVE;
     devices[device].priv = &block;
     devices[device].name = name;
@@ -40,7 +40,7 @@ int add_simple_block(char* name, block_device block) {
 }
 
 int add_alias(device_t* dev, char* alias) {
-    mprintf("New driver alias: %s -> (orig)%s\n",alias,dev->name);
+    DVERBOSE(mprintf("New driver alias: %s -> (orig)%s\n",alias,dev->name));
     devices[device].dev_type = DEVICE_ALIAS;
     devices[device].priv = dev;
     devices[device].io = null_device;

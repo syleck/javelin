@@ -1,6 +1,10 @@
-# INJEN IVM
+# INJEN IVM Specification
 
 Javelin Compiled Language, licensed under the AGPL
+
+Current spec version: 0x00010001 (Version 1, Revision 1)
+
+The spec is technically two uint16_t's, the first 4 numbers (0001) are the specification version, and the last 4 (0001) are the specification revision.
 
 I got inspired by HolyC.
 
@@ -38,15 +42,56 @@ This compiles to (instructions/registers defined in injen.h)
 
 ## Injen Spec
 
-There are 6 general purpose registers. BP is kinda for calling convention stuff, but if youre using pure IVM its general purpose.
+There are 12 or more general purpose registers. BP is kinda for calling convention stuff, but if youre using pure IVM its general purpose.
 
     r0, r1, r2, r3, r4, bp
 
-There is a stack pointer, and an instruction pointer.
+### SORTA GENERAL PURPOSE
 
+Do not rely on these registers existing. I mean you kinda can, but if they get changed/removed support/warranty is not given.
+
+    (added in spec 0x00010001) lf0, lf1, a0, a1, a2, a3, a4
+
+There is a stack pointer, and an instruction pointer, and a status register (CMP).
+
+Prefixes may be in any order, so
+
+    OffsetData
+    MovReverse
+
+is fine, and
+
+    MovReverse
+    OffsetData
+
+is fine aswell.
+
+## IO Ports
+
+Rewrite this im lazy
+
+    0x00000000-0x0000FFFF
+        Should be sent to the respective IO ports with a inl or outl on the hypervisors end, when IVM permits it. (permission level 2 or above)
+    0xFFFF0000-0xFFFFFFFF
+        Should be sent to IVM IO ports.
+            Port Offset 0: Terminal Data
+                All data sent to this port is displayed on the terminal.
+            Port Offset 1: Terminal Control
+                All data sent to this port controls the terminal.
+
+## Permissions
+
+There are 3 permissions levels,
+    - 0, called the lowerproc level
+    - 1, called the proc level
+    - 2, called the superproc level
+Procs at level 2 are akin to adminisrator level processes, and procs at level 0 are akin to threads with limited access to the system.
+
+Port 2 IO allows procs initially at level 2 to change the io_control level, which allows lower procs to write out to IO ports. For example, terminal access is restricted until a superproc allows a proc or lowerproc to use it.
+    
 ## Licensing
 
-The IVM spec itself is licensed under the MIT, but this implementation of it is AGPL.
+The Injen/IVM spec itself is licensed under the MIT, but this implementation of it is AGPL.
 
     Copyright 2021-2022 The Javelin Team & Kernelvega
 

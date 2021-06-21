@@ -5,7 +5,7 @@ KERNEL_DISASMS := $(KERNEL_DISASM:%=dsm/%.s)
 TARGET_OBJECT  := javelin.bin
 TARGET_DIR     := bin
 KERNELBUILD_ID := $(shell tr -dc A-Za-z </dev/urandom | head -c 13 ; echo '')
-BUILDDATE      := $(shell date)
+BUILDDATE      := $(shell date -R)
 DEFINES        := -DDATE="\"$(BUILDDATE)\""
 
 .PHONY: all
@@ -13,7 +13,7 @@ all: $(TARGET_DIR)/$(TARGET_OBJECT)
 
 $(TARGET_DIR)/$(TARGET_OBJECT): $(KERNEL_OBJECTS) KernelLink.ld 
 	@$(MKDIR_P) $(dir $@)
-	@echo "Building kernel $(KERNELBUILD_ID)"
+	@echo "Building kernel $(KERNELBUILD_ID) on $(BUILDDATE)"
 	@i686-elf-gcc -T KernelLink.ld -fno-omit-frame-pointer -o bin/javelin.bin -ffreestanding -O2 -nostdlib $(KERNEL_OBJECTS) -lgcc
 	@echo "$(KERNEL_OBJECTS) -> $(TARGET_DIR)/$(TARGET_OBJECT)"
 	@echo "Determining if grub multiboot"
@@ -24,22 +24,22 @@ disassemble: $(KERNEL_DISASMS)
 obj/%.asm.o: %.asm n_options.txt KernelLink.ld 
 	@$(MKDIR_P) $(dir $@)
 	@nasm $(shell cat n_options.txt) $(NFLAGS) -felf32 -o $@ $<
-	@echo "as (intel) $<"
+	@echo "$(BUILDDATE) as $(shell cat n_options.txt) $(NFLAGS) (intel) $<"
 
 obj/%.s.o: %.s a_options.txt KernelLink.ld 
 	@$(MKDIR_P) $(dir $@)
 	@i686-elf-as $(shell cat a_options.txt) $(AFLAGS) -c $< -o $@
-	@echo "as (at&t ) $<"
+	@echo "$(BUILDDATE) as $(shell cat a_options.txt) $(AFLAGS) (at&t ) $<"
 
 dsm/%.c.s: %.c
 	@$(MKDIR_P) $(dir $@)
 	@i686-elf-gcc -S $(shell cat c_options.txt) $(CFLAGS) $(DEFINES) -c $< -o $@ -std=gnu99 -ffreestanding -O2 -Wall -Wextra
-	@echo "parsing $<"
+	@echo "$(BUILDDATE) parsing $(shell cat c_options.txt) $(DEFINES) $(CFLAGS) $<"
 
 obj/%.c.o: %.c c_options.txt KernelLink.ld 
 	@$(MKDIR_P) $(dir $@)	
 	@i686-elf-gcc $(shell cat c_options.txt) $(CFLAGS) $(DEFINES) -c $< -o $@ -std=gnu99 -ffreestanding -O2 -Wall -Wextra
-	@echo "cc $<"
+	@echo "$(BUILDDATE) cc $(shell cat c_options.txt) $(DEFINES) $(CFLAGS) $<"
 
 .PHONY: clean
 clean: # clear only what we're responsible for

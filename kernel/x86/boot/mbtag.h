@@ -244,5 +244,27 @@ struct multiboot_tag_load_base_addr
   multiboot_uint32_t load_base_addr;
 };
 
+typedef union multiboot_union {
+  struct multiboot_tag tag;
+  struct multiboot_tag_string string;
+  struct multiboot_tag_module module;
+  struct multiboot_tag_basic_meminfo meminfo;
+  struct multiboot_tag_bootdev bootdev;
+  struct multiboot_tag_mmap mmap;
+  struct multiboot_tag_vbe vbe;
+  struct multiboot_tag_framebuffer framebuffer;
+  struct multiboot_tag_elf_sections elf_sections;
+  struct multiboot_tag_apm apm;
+  struct multiboot_tag_efi32 efi32;
+  struct multiboot_tag_efi64 efi64;
+  struct multiboot_tag_smbios smbios;
+  struct multiboot_tag_old_acpi old_acpi;
+  struct multiboot_tag_new_acpi new_acpi;
+  struct multiboot_tag_network network;
+  struct multiboot_tag_efi_mmap efi_mmap;
+  struct multiboot_tag_efi32_ih efi32_ih;
+  struct multiboot_tag_efi64_ih efi64_ih;
+  struct multiboot_tag_load_base_addr load_base_addr;
+} multiboot_u;
 
 #endif

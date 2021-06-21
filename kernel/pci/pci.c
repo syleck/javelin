@@ -117,8 +117,8 @@ void pci_probe()
 
                         break;
                     default:
-                        printf("PCI type %i, oopsing",pdev->base.header_type);
-                        OOPS("Unknown pci type\n");
+                        DVERBOSE(printf("PCI type %i, oopsing",pdev->base.header_type));
+                        DVERBOSE(OOPS("Unknown pci type\n"));
                         break;
                 }
                 device_t* jdev = alloc_device();
@@ -166,7 +166,7 @@ void pci_probe()
                         vendorname = "Unknown";
                         break;
                 }
-                mprintf("vendor: %s (0x%x) device: 0x%x name: %s header: %i\n    class: 0x%x subclass: 0x%x\n    bus: 0x%x slot: 0x%x function 0x%x\n", vendorname, vendor, device, jdev->name, pdev->base.header_type, pdev->base.class, pdev->base.subclass, bus, slot, function);
+                DVERBOSE(mprintf("vendor: %s (0x%x) device: 0x%x name: %s header: %i\n    class: 0x%x subclass: 0x%x\n    bus: 0x%x slot: 0x%x function 0x%x\n", vendorname, vendor, device, jdev->name, pdev->base.header_type, pdev->base.class, pdev->base.subclass, bus, slot, function));
                 add_pci_device(pdev);
                 free(vendorname);
             }

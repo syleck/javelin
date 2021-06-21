@@ -37,6 +37,16 @@
         "new": "cpp",
         "adlib.h": "c",
         "elf.h": "c",
-        "v86.h": "c"
-    }
+        "v86.h": "c",
+        "random": "c",
+        "framebuffer.h": "c"
+    },
+    "editor.fontFamily": "'Mx437 AMI EGA 8x8'",
+    "editor.fontSize": 8,
+    "terminal.integrated.fontFamily": "'Mx437 AMI EGA 8x8', 'Fira Code Light', monospace",
+    "terminal.integrated.fontSize": 8,
+    "terminal.integrated.fontWeight": "normal",
+    "editor.fontLigatures": null,    
+    "customizeUI.font.monospace": "Mx437 AMI EGA 8x8",
+    "customizeUI.font.regular": "Mx437 AMI EGA 8x8",
 }

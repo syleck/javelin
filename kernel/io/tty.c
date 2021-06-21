@@ -3,6 +3,8 @@
 #include "../module.h"
 #include "../stdlib.h"
 #include "../x86/asm.h"
+#include "serial.h"
+#include "../sys/framebuffer.h"
 #include <stdbool.h>
 
 MODULE("TTY");
@@ -11,6 +13,8 @@ MODULE_CONTACT("watergatchi@protonmail.com");
 MODULE_LICENSE("AGPL");
 
 bool text_mode = true;
+bool term_init = false;
+#define CHKTERM() if(!term_init) return;
 
 int terminal_row = 0;
 int terminal_col = 0;
@@ -23,6 +27,7 @@ int echo_ttyc = 0;
 uint8_t term_color = TERM_COLOR;
 
 void tty_scroll() {
+    CHKTERM()
     terminal_row = CONSOLE_HEIGHT-1;
     uint16_t terminal_buffer[(CONSOLE_HEIGHT*CONSOLE_WIDTH)+CONSOLE_WIDTH];
     memcpy(terminal_buffer,VIDEO_POINTER,(CONSOLE_HEIGHT*CONSOLE_WIDTH)*2);
@@ -46,6 +51,7 @@ void tty_setcolor(uint8_t c) {
 }
 
 void tty_clear() {
+    CHKTERM()
     if(text_mode) {
         for(int i = 0; i < (CONSOLE_HEIGHT*CONSOLE_WIDTH)*2; i++) {
             *((uint16_t*)VIDEO_POINTER+i) = term_color<<8;
@@ -60,9 +66,13 @@ void tty_clear() {
 }
 
 void tty_putch(char i) {
+    CHKTERM()
     if(i == '\n') {
         terminal_row++;
         terminal_col = 0;
+        if(terminal_row != 0)   
+            write_serial('\r');
+            write_serial('\n');
         return;
     }
     uint16_t ch;
@@ -72,9 +82,13 @@ void tty_putch(char i) {
     if(terminal_row >= CONSOLE_HEIGHT) {
         tty_scroll();
     }
-    if(text_mode) {
-        VIDEO_PTRFROMXY(terminal_col,terminal_row) = ch;
-    }
+    VIDEO_PTRFROMXY(terminal_col,terminal_row) = ch;
+    if(term_color != TERM_SCLOR)
+        drawchar(i,terminal_col*8,terminal_row*16,0xFFFFFF,0x000000);
+    else
+        drawchar(i,terminal_col*8,terminal_row*16,0xbbbbff,0x0000aa);
+    if(terminal_row != 0)
+        write_serial(i);
     for(int i = 0; i < echo_ttyc; i++) {
         echo_ttys[i]->write_byte(i);
     }
@@ -103,6 +117,7 @@ io_struct tty = {
 
 void enable_cursor(uint8_t cursor_start, uint8_t cursor_end)
 {
+    CHKTERM()
     if(text_mode) {
         outb(0x3D4, 0x0A);
         outb(0x3D5, (inb(0x3D5) & 0xC0) | cursor_start);
@@ -114,6 +129,7 @@ void enable_cursor(uint8_t cursor_start, uint8_t cursor_end)
 
 void disable_cursor()
 {
+    CHKTERM()
     if(text_mode) {
         outb(0x3D4, 0x0A);
         outb(0x3D5, 0x20);
@@ -122,6 +138,7 @@ void disable_cursor()
 
 void update_cursor(int x, int y)
 {
+    CHKTERM()
 	uint16_t pos = y * CONSOLE_WIDTH + x;
  
     if(text_mode) {
@@ -136,12 +153,14 @@ void update_cursor(int x, int y)
 }
 
 void add_echo_tty(io_struct* str) {
-    mprintf("New echo tty: %x\n",str);
+    CHKTERM()
+    DVERBOSE(mprintf("New echo tty: %x\n",str));
     echo_ttys[echo_ttyc] = str;
     echo_ttyc++;
 }
 
 void init_tty() {
+    term_init = true;
     tty_handle = &tty;
     tty_clear();
     int d = add_simple_text("tty0",tty);

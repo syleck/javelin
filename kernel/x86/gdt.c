@@ -59,7 +59,9 @@ extern void _tss_flush();
 extern uint32_t _get_ksr();
 
 void gdt_set_gate(int num, uint32_t base, uint32_t limit, uint8_t access, uint8_t granularity) {
+	#ifdef VERBOSE
 	mprintf("Inserting gate %i, base: %x, limit: %x, access: %x, granularity: %x\n", num, base, limit, access, granularity);
+	#endif
 	gdt_entries[num].base_low = (base & 0xFFFF);
 	gdt_entries[num].base_middle = (base >> 16) & 0xFF;
 	gdt_entries[num].base_high = (base >> 24) & 0xFF;

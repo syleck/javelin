@@ -8,6 +8,12 @@
 // panic.c
 int panic(char* reason);
 
+#ifdef VERBOSE
+#define DVERBOSE(x) { x; }
+#else 
+#define DVERBOSE(x) 
+#endif
+
 #ifndef ONT_DO_MODULES
 /**
  * @brief Sets the module name.
