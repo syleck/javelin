@@ -1,0 +1,28 @@
+name: Doxygen CI
+on:
+  push:
+    branches: [ masterhand ]
+  pull_request:
+    branches: [ masterhand ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Doxygen Action
+        uses: mattnotmitt/doxygen-action@v1.3.1
+        with:
+          enable-latex: true
+          
+      - name: GitHub Pages
+        uses: crazy-max/ghaction-github-pages@v2.5.0
+        with:
+          build_dir: docs
+          commit_message: Doxygen push
+          jekyll: false
+      
