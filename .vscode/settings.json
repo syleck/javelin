@@ -39,7 +39,10 @@
         "elf.h": "c",
         "v86.h": "c",
         "random": "c",
-        "framebuffer.h": "c"
+        "framebuffer.h": "c",
+        "stddef.h": "c",
+        "3dfx8x16.h": "c",
+        "sysfont.h": "c"
     },
     // you didnt see that
 }

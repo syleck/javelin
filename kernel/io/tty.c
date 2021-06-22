@@ -27,6 +27,7 @@ int echo_ttyc = 0;
 uint8_t term_color = TERM_COLOR;
 
 void tty_scroll() {
+    /*
     CHKTERM()
     terminal_row = CONSOLE_HEIGHT-1;
     uint16_t terminal_buffer[(CONSOLE_HEIGHT*CONSOLE_WIDTH)+CONSOLE_WIDTH];
@@ -44,6 +45,7 @@ void tty_scroll() {
             *((uint16_t*)VIDEO_POINTER+i) = TERM_SCLOR<<8;
         }
     }
+    */
 }
 
 void tty_setcolor(uint8_t c) {
@@ -51,6 +53,7 @@ void tty_setcolor(uint8_t c) {
 }
 
 void tty_clear() {
+    /*
     CHKTERM()
     if(text_mode) {
         for(int i = 0; i < (CONSOLE_HEIGHT*CONSOLE_WIDTH)*2; i++) {
@@ -62,7 +65,7 @@ void tty_clear() {
         }
     }
     terminal_row = 0;
-    terminal_col = 0;
+    terminal_col = 0;*/
 }
 
 void tty_putch(char i) {
@@ -82,11 +85,11 @@ void tty_putch(char i) {
     if(terminal_row >= CONSOLE_HEIGHT) {
         tty_scroll();
     }
-    VIDEO_PTRFROMXY(terminal_col,terminal_row) = ch;
+    //VIDEO_PTRFROMXY(terminal_col,terminal_row) = ch;
     if(term_color != TERM_SCLOR)
-        drawchar(i,terminal_col*8,terminal_row*16,0xFFFFFF,0x000000);
+        drawchar(i,terminal_col*CHAR_WIDTH,terminal_row*CHAR_HEIGHT,0xffffff,0x000000);
     else
-        drawchar(i,terminal_col*8,terminal_row*16,0xbbbbff,0x0000aa);
+        drawchar(i,terminal_col*CHAR_WIDTH,terminal_row*CHAR_HEIGHT,0xddddff,0x1111aa);
     if(terminal_row != 0)
         write_serial(i);
     for(int i = 0; i < echo_ttyc; i++) {
@@ -117,6 +120,7 @@ io_struct tty = {
 
 void enable_cursor(uint8_t cursor_start, uint8_t cursor_end)
 {
+    /*
     CHKTERM()
     if(text_mode) {
         outb(0x3D4, 0x0A);
@@ -125,19 +129,22 @@ void enable_cursor(uint8_t cursor_start, uint8_t cursor_end)
         outb(0x3D4, 0x0B);
         outb(0x3D5, (inb(0x3D5) & 0xE0) | cursor_end);
     }
+    */
 }
 
 void disable_cursor()
 {
+    /*
     CHKTERM()
     if(text_mode) {
         outb(0x3D4, 0x0A);
         outb(0x3D5, 0x20);
-    }
+    }*/
 }
 
 void update_cursor(int x, int y)
 {
+    /*
     CHKTERM()
 	uint16_t pos = y * CONSOLE_WIDTH + x;
  
@@ -147,7 +154,7 @@ void update_cursor(int x, int y)
         outb(0x3D4, 0x0E);
         outb(0x3D5, (uint8_t) ((pos >> 8) & 0xFF));
     }
-
+    */
     terminal_col = x;
     terminal_row = y;
 }

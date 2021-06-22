@@ -1,15 +1,16 @@
 #include "framebuffer.h"
 #include "state.h"
-#include "ifnt/3dfx8x16.h"
+#include "ifnt/sysfont.h"
 #include "dis/tga.h"
-#include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
 #include "../x86/int/irq.h"
 
 uint32_t* framebuffer;
-int c_res_x;
-int c_res_y;
+int c_res_x = 0;
+int c_res_y = 0;
+int CONSOLE_WIDTH = 80;
+int CONSOLE_HEIGHT = 25;
 int c_bpp;
 int c_pitch;
 unsigned char *font;
@@ -22,21 +23,21 @@ void fb_init() {
 void fb_clear() {
     for(int i = 0; i < c_res_x; i++) {
         for(int j = 0; j < c_res_y; j++) {
-            putpixel(framebuffer,j,i,i/(j+1));
+            putpixel(framebuffer,j,i,0xa0a0a0);
         }
     }
-    draw_icon(c_res_x-100,0,tga[0],tga[1],tga+2);
+    //draw_icon(c_res_x-100,0,tga[0],tga[1],tga+2);
 }
  
-void putpixel(unsigned char* screen, int x,int y, int color) {
+void putpixel(unsigned char* screen, int x, int y, int color) {
     unsigned where = x*4 + y*c_res_x;
     screen[where] = color & 255;              // BLUE
     screen[where + 1] = (color >> 8) & 255;   // GREEN
     screen[where + 2] = (color >> 16) & 255;  // RED
 }
 
-void fillrect(unsigned char *vram, unsigned char r, unsigned char g, unsigned   char b, unsigned char w, unsigned char h) {
-    unsigned char *where = vram;
+void fillrect(unsigned char *vram, int x, int y, unsigned char r, unsigned char g, unsigned   char b, unsigned char w, unsigned char h) {
+    unsigned char *where = vram + x*4 + y*c_res_x;
     int i, j;
  
     for (i = 0; i < w; i++) {
@@ -53,21 +54,18 @@ void fillrect(unsigned char *vram, unsigned char r, unsigned char g, unsigned   
 void drawchar(unsigned char c, int x, int y, int fgcolor, int bgcolor)
 {
 	int cx,cy;
-	int mask[8]={1,2,4,8,16,32,64,128};
-	unsigned char *gylph=font+(int)c*16;
-    x+=7;
-    y+=16;
+	int mask[]={1,2,4,8,16,32,64,128};
+	unsigned char *gylph=font+(int)c*CHAR_HEIGHT;
+    x+=CHAR_WIDTH-1;
     bool snc = false;
 
     if(bgcolor == 0) {
         snc = true;
     }
 
-	for(cy=0;cy<16;cy++){
-		for(cx=7;cx>=0;cx--){
-			putpixel(framebuffer,x-cx,y+cy-12,gylph[cy]&mask[cx]?fgcolor:bgcolor);
-            if(snc)
-                bgcolor = (x-cx)/(y+cy-12)+1;
+	for(cy=0;cy<CHAR_HEIGHT;cy++){
+		for(cx=CHAR_WIDTH-1;cx>=0;cx--){
+			putpixel(framebuffer,x-cx,y+cy,gylph[cy]&mask[cx]?fgcolor:bgcolor);
 		}
 	}
 }
@@ -82,21 +80,24 @@ void draw_icon(int x, int y, int w, int h, int *pixels) {
 }
 
 void fbupdate() {
+    framebuffer = get_info(SYSINFO_VIDEO_ADDR);
     c_res_x = get_info(SYSINFO_VIDEO_RESX);
     c_res_y = get_info(SYSINFO_VIDEO_RESY);
     c_bpp = get_info(SYSINFO_VIDEO_BPP);
     c_pitch = get_info(SYSINFO_VIDEO_PITCH);
     tty_clear();
-    font = fnt3dfx8x16;
+    font = fnt3dfx8x8;
     if(get_info(SYSINFO_TEXT_FBFONT_START)) {
         font = get_info(SYSINFO_TEXT_FBFONT_START);
     }
 
-    framebuffer = get_info(SYSINFO_VIDEO_ADDR);
-    printf("%ix%ix%i\n",c_res_x,c_res_y,c_bpp);    
-    if(get_info(SYSINFO_ICON_START)) {
+    /*if(get_info(SYSINFO_ICON_START)) {
         tga_header_t* tga_header = get_info(SYSINFO_ICON_START);
-        tga = tga_parse(tga_header,tga_header->w*tga_header->h);
+        tga = tga_parse(tga_header+sizeof(tga_header_t),get_info(SYSINFO_ICON_END-SYSINFO_ICON_START));
         draw_icon(c_res_x-100,0,tga[0],tga[1],tga+2);
-    }
+    }*/
+
+    CONSOLE_WIDTH = c_res_x/CHAR_HEIGHT;
+    CONSOLE_HEIGHT = c_res_y/CHAR_WIDTH;
+    printf("%ix%ix%i\n",c_res_x,c_res_y,c_bpp);    
 }

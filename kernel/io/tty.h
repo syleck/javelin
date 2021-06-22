@@ -9,8 +9,8 @@ extern int terminal_col;
 
 #define TERM_COLOR 0x87
 #define TERM_SCLOR 0x9F
-#define CONSOLE_HEIGHT 48
-#define CONSOLE_WIDTH 128
+extern int CONSOLE_HEIGHT;
+extern int CONSOLE_WIDTH;
 #define VGAVIDEO_PTR  0x00000
 #define VIDEO_POINTER 0xfd000000
 

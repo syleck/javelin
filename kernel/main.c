@@ -22,6 +22,7 @@
 #include "drv/sb16.h"
 #include "fs/iso9660.h"
 #include "injen/injen.h"
+#include "sys/dis/wm.h"
 #include "module.h"
 
 MODULE("KERNEL");
@@ -35,10 +36,8 @@ int kernel_main(uint32_t bleax, uint32_t blebx) {
 	irq_install();
 
 	init_tty();
-	fb_init();
 
 	multiboot_init(bleax,blebx);
-	fb_clear();
 
 	init_serial();
 	init_bochs();
@@ -86,7 +85,8 @@ int kernel_main(uint32_t bleax, uint32_t blebx) {
 	//init_ata_pio();
 	init_random();
 	//init_sound();
-
+	init_wm();
+	dbg_show_malloc_count();
 	asm("sti");
 	for(;;) {
 		sleep(1);

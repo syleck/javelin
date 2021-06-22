@@ -18,7 +18,7 @@ struct task {
     char* name;
     uint32_t tasktime;
     uint32_t settime;
-    uint16_t ttymem[CONSOLE_WIDTH*CONSOLE_HEIGHT];
+    uint16_t ttymem[2048];
     struct regs registers;
 };
 
@@ -35,7 +35,7 @@ void printsched() {
     tty_setcolor(TERM_SCLOR);
     printf("                                ");
     update_cursor(0,0);
-    printf("JAVELIN;Task: %s;",current_task->name);
+    printf("scheduler;task: %s;",current_task->name);
     tty_setcolor(TERM_COLOR);
     terminal_col = otc;
     terminal_row = otr;
@@ -57,6 +57,8 @@ void scheduler_yield(struct regs *regs) {
     } else {
         current_task->tasktime--;
     }
+    if(sched_calls % 10000 != 0)
+	    repaint_all();
 }
 
 void scheduler_init(struct regs *kregs) {

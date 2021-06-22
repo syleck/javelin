@@ -287,13 +287,13 @@ char *strtok (char *s, const char *delim)
 }
 
 char tbuf[32];
-char bchars[] = "0123456789abcdefghijkmnlopqrstuvwxyzABCDEFGHIJKMNLOPQRSTUVWXYZ!@#$%^&*()";
+char bchars[] = "0123456789abcdefghijkmnlopqrstuvwxyzABCDEFGHIJKMNLOPQRSTUVWXYZ!@#$%^&*()/\\[]-=+'\".></;:";
 void itoa(unsigned i,unsigned base,char* buf) {
     int pos = 0;
     int opos = 0;
     int top = 0;
 
-    if (i == 0 || base > 72) {
+    if (i == 0 || base > 88) {
         buf[0] = '0';
         buf[1] = '\0';
         return;
