@@ -106,8 +106,9 @@ void _irq_handler(struct regs r)
 			if(get_state() != SYSTEM_NORMAL) {
 				break;
 			}
-			if(handler[r.int_no-0x1f].program != 0) {
-				handler[r.int_no-0x1f].program(r.int_no);
+			if(handler[r.int_no-0x20].program != 0) {
+				handler[r.int_no-0x20].program(r.int_no);
+				break;
 			}
 			mprintf("IRQ: %x\n",r.int_no);
 			OOPS("Unknown IRQ");

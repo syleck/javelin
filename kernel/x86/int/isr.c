@@ -6,6 +6,7 @@
 #include "irq.h"
 #include "../../sys/stacktrace.h"
 #include "../../sys/syscall.h"
+#include "../../sys/framebuffer.h"
 #include <stdbool.h>
 
 MODULE("ISR")
@@ -102,6 +103,7 @@ void dump_regs(struct regs r) {
 
 void _fault_handler(struct regs r)
 {
+	asm("cli");
 	tty_setcolor(0xdf);
 	tty_clear();
 	switch (r.int_no)
@@ -121,6 +123,8 @@ void _fault_handler(struct regs r)
 			state = false;
 			break;
 		default:
+			fb_clear();
+			tty_clear();
 			if(get_irqc()) {
 				mprintf("Was handling IRQ #%i\n",get_irqc());
 			}
@@ -131,4 +135,5 @@ void _fault_handler(struct regs r)
 			PANIC("ISR interrupt");
 			break;
 	}
+	asm("sti");
 }

@@ -33,3 +33,10 @@ generates bin/jsh.elf
     make -j4 -f Elf2JprogMake.mk
 
 generates bin/elf2jprog
+
+Created at 2021-05-26 10:26:51.888981686 -0400
+
+Shell: 2021-06-06 14:44:06.110136431 -0400
+
+Elf2jprog: 2021-06-09 10:58:15.476382853 -0400
+    

@@ -23,7 +23,7 @@ void fb_init() {
 void fb_clear() {
     for(int i = 0; i < c_res_x; i++) {
         for(int j = 0; j < c_res_y; j++) {
-            putpixel(framebuffer,j,i,0xa0a0a0);
+            putpixel(framebuffer,j,i,0x606060);
         }
     }
     //draw_icon(c_res_x-100,0,tga[0],tga[1],tga+2);
@@ -54,7 +54,7 @@ void fillrect(unsigned char *vram, int x, int y, unsigned char r, unsigned char 
 void drawchar(unsigned char c, int x, int y, int fgcolor, int bgcolor)
 {
 	int cx,cy;
-	int mask[]={1,2,4,8,16,32,64,128};
+	int mask[]={1,2,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384};
 	unsigned char *gylph=font+(int)c*CHAR_HEIGHT;
     x+=CHAR_WIDTH-1;
     bool snc = false;
@@ -86,7 +86,7 @@ void fbupdate() {
     c_bpp = get_info(SYSINFO_VIDEO_BPP);
     c_pitch = get_info(SYSINFO_VIDEO_PITCH);
     tty_clear();
-    font = fnt3dfx8x8;
+    font = vincent_data;
     if(get_info(SYSINFO_TEXT_FBFONT_START)) {
         font = get_info(SYSINFO_TEXT_FBFONT_START);
     }
@@ -97,7 +97,7 @@ void fbupdate() {
         draw_icon(c_res_x-100,0,tga[0],tga[1],tga+2);
     }*/
 
-    CONSOLE_WIDTH = c_res_x/CHAR_HEIGHT;
-    CONSOLE_HEIGHT = c_res_y/CHAR_WIDTH;
+    CONSOLE_WIDTH = c_res_x/CHAR_WIDTH;
+    CONSOLE_HEIGHT = c_res_y/CHAR_HEIGHT;
     printf("%ix%ix%i\n",c_res_x,c_res_y,c_bpp);    
 }

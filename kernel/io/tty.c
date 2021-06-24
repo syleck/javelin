@@ -7,6 +7,8 @@
 #include "../sys/framebuffer.h"
 #include <stdbool.h>
 
+// TODO: Make this better and make it work with the framebuffer more better
+
 MODULE("TTY");
 MODULE_CREATOR("kernelvega");
 MODULE_CONTACT("watergatchi@protonmail.com");
@@ -63,9 +65,9 @@ void tty_clear() {
             // clear the scheduler line
             *((uint16_t*)VIDEO_POINTER+i) = TERM_SCLOR<<8;
         }
-    }
+    }*/
     terminal_row = 0;
-    terminal_col = 0;*/
+    terminal_col = 0;
 }
 
 void tty_putch(char i) {
@@ -86,10 +88,7 @@ void tty_putch(char i) {
         tty_scroll();
     }
     //VIDEO_PTRFROMXY(terminal_col,terminal_row) = ch;
-    if(term_color != TERM_SCLOR)
-        drawchar(i,terminal_col*CHAR_WIDTH,terminal_row*CHAR_HEIGHT,0xffffff,0x000000);
-    else
-        drawchar(i,terminal_col*CHAR_WIDTH,terminal_row*CHAR_HEIGHT,0xddddff,0x1111aa);
+    drawchar(i,terminal_col*CHAR_WIDTH,terminal_row*CHAR_HEIGHT,0xffffff,0x606060);
     if(terminal_row != 0)
         write_serial(i);
     for(int i = 0; i < echo_ttyc; i++) {

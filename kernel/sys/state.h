@@ -26,6 +26,10 @@ enum sysinfo_entry {
     SYSINFO_ICON_START,
     SYSINFO_ICON_END,
 
+    // where malloc should begin
+    SYSINFO_MALLOC_START,
+    SYSINFO_MALLOC_NOMEM,
+
     SYSINFO_MEM_LOAD,
     SYSINFO_MEM_LENGTH,
 };

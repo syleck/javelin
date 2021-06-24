@@ -1,14 +1,10 @@
 #include "state.h"
 
 enum system_state system_state = SYSTEM_NORMAL;
-uint32_t *sysinfo;
+uint32_t sysinfo[512];
 
 void init_info(void* ad) {
-    if(ad != 0) {
-        sysinfo = ad;
-    } else {
-        sysinfo = kmalloc(512,"Sysinfo data");
-    }
+
 }
 
 void set_info(uint32_t a, uint32_t v) {

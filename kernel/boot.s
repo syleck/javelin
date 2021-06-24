@@ -7,7 +7,7 @@
 .global _multiboot_header
 .align 4
 _multiboot_header:
-        .long MAGIC
+        .long MAGIC 
         .long ARCH
         .long (_multiboot_header - _multiboot_end)
         .long -(MAGIC + ARCH + (_multiboot_header - _multiboot_end))

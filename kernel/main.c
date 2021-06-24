@@ -23,6 +23,7 @@
 #include "fs/iso9660.h"
 #include "injen/injen.h"
 #include "sys/dis/wm.h"
+#include "sys/state.h"
 #include "module.h"
 
 MODULE("KERNEL");
@@ -30,18 +31,34 @@ MODULE_CREATOR("kernelvega");
 MODULE_CONTACT("watergatchi@protonmail.com");
 MODULE_LICENSE("AGPL");
 
+char* banner =
+"      #                                                           ### ###\n"
+"      #   ##   #    # ###### #      # #    #    #    # #    #      #   # \n"
+"      #  #  #  #    # #      #      # ##   #    ##  ## #   #       #   # \n"
+"      # #    # #    # #####  #      # # #  #    # ## # ####        #   # \n"
+"#     # ###### #    # #      #      # #  # #    #    # #  #   ###  #   # \n"
+"#     # #    #  #  #  #      #      # #   ##    #    # #   #  ###  #   # \n"
+" #####  #    #   ##   ###### ###### # #    #    #    # #    # ### ### ###\n";
+
 int kernel_main(uint32_t bleax, uint32_t blebx) {
+    init_info(0);
+
+	// any preallocs required before multiboot creates memory maps
+	set_info(SYSINFO_MALLOC_START,0x00007E00);
+	set_info(SYSINFO_MALLOC_NOMEM,0x0007FFFF);
+
 	idt_install();
 	isr_install();
 	irq_install();
 
 	init_tty();
-
-	multiboot_init(bleax,blebx);
-
 	init_serial();
 	init_bochs();
-	printf("==javelin==\nbuilt at: %s\n",__DATE__);
+
+	multiboot_init(bleax,blebx);
+	fb_clear();
+
+	printf("%s\nbuilt at: %s\n",banner,__DATE__);
 	printf("Special flags: ");
 	#ifdef PANIC_ON_OOPS
 	printf("PANIC_ON_OOPS ");
@@ -88,7 +105,17 @@ int kernel_main(uint32_t bleax, uint32_t blebx) {
 	init_wm();
 	dbg_show_malloc_count();
 	asm("sti");
+	char inputLine[255];
+	device_t* kb = get_device_byname("kbd");
 	for(;;) {
+		inputLine[254] = '\0';
+		if(kb)
+			kb->io.read_stream(inputLine,255);
+		else {
+			printf("keyboard device not found");
+			return 1;
+		}
+		printf("%s\n",inputLine);
 		sleep(1);
 	}
 	return 0;

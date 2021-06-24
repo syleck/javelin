@@ -145,7 +145,7 @@ void pci_probe()
                         }
                         break;
                 }
-                char *vendorname = (char*)malloc(255);
+                char *vendorname;
                 switch(pdev->base.vendor) {
                     case 0x8086:
                         vendorname = "Intel";
@@ -168,7 +168,6 @@ void pci_probe()
                 }
                 DVERBOSE(mprintf("vendor: %s (0x%x) device: 0x%x name: %s header: %i\n    class: 0x%x subclass: 0x%x\n    bus: 0x%x slot: 0x%x function 0x%x\n", vendorname, vendor, device, jdev->name, pdev->base.header_type, pdev->base.class, pdev->base.subclass, bus, slot, function));
                 add_pci_device(pdev);
-                free(vendorname);
             }
         }
     }

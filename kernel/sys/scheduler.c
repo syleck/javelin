@@ -5,6 +5,8 @@
 #include "../io/tty.h"
 #include "../x86/task.h"
 #include "../stdlib.h"
+#include "../string.h"
+#include "dis/wm.h"
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -28,27 +30,17 @@ struct task* previous_task = 0;
 bool scheduler_state = false;
 uint64_t sched_calls = 0;
 
-void printsched() {
-    int otc = terminal_col;
-    int otr = terminal_row;
-    update_cursor(0,0);
-    tty_setcolor(TERM_SCLOR);
-    printf("                                ");
-    update_cursor(0,0);
-    printf("scheduler;task: %s;",current_task->name);
-    tty_setcolor(TERM_COLOR);
-    terminal_col = otc;
-    terminal_row = otr;
+void scheduler_paint(window* wind) {
+    wind->toolkit->drawtext(wind,1,1,"Scheduler");
+    wind->toolkit->drawtext(wind,1,17,"Task:");
+    wind->toolkit->drawtext(wind,41,17,current_task->name);
 }
-
 
 void scheduler_yield(struct regs *regs) {
     if(!scheduler_state) {
         scheduler_init(regs);
         return;
     }
-    if(sched_calls % 1000 != 0)
-        printsched();
     sched_calls++;
     if(current_task->tasktime == 0) {
         //current_task = *((struct task*)tasks->next->data);
@@ -57,7 +49,7 @@ void scheduler_yield(struct regs *regs) {
     } else {
         current_task->tasktime--;
     }
-    if(sched_calls % 10000 != 0)
+    if(sched_calls % 100 == 0)
 	    repaint_all();
 }
 
@@ -69,4 +61,15 @@ void scheduler_init(struct regs *kregs) {
     kernel_task.name = "kernel";
     current_task = &kernel_task;
     scheduler_state = true;
+
+    window* taskwin = kmalloc(sizeof(taskwin),"SchedulerWindow");
+    taskwin->x = taskwin->ox = 200;
+    taskwin->y = taskwin->oy = 50;
+    taskwin->w = 300;
+    taskwin->h = 500;
+    taskwin->ownerpid = 1;
+    taskwin->repaint = scheduler_paint;
+    taskwin->title = "Scheduler Info";
+    taskwin->visible = true;
+    new_window(taskwin);
 }

@@ -1,5 +1,6 @@
 #include "stacktrace.h"
 #include "../module.h"
+#include "../x86/boot/grub.h"
 
 MODULE("STACKTRACE");
 MODULE_CREATOR("kernelvega");
@@ -25,7 +26,7 @@ void tracestack(uint32_t frames)
         frames = UINT32_MAX;
     for(unsigned int frame = 0; stk && frame < frames; ++frame)
     {
-        mprintf("  0x%x (next: 0x%x)    \n", stk->eip, stk->ebp);
+        mprintf("  0x%x %s (next: 0x%x)\n", stk->eip, get_symbol(stk->eip), stk->ebp);
         if(stk->ebp == 0xb00b1e5) {
             mputs("Trace end\n");
             break;

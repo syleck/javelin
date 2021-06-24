@@ -1,8 +1,9 @@
 #include "mem.h"
 #include <stdbool.h>
+#include "sys/state.h"
 #include "module.h"
 
-#define MEMORY_START 0x01000000
+#define MEMORY_START get_info(SYSINFO_MALLOC_START)
 
 MODULE("MALLOC");
 MODULE_CREATOR("kernelvega");
@@ -57,6 +58,10 @@ void* kmalloc(size_t size, char* module) {
                 address += memory_allocation_table[get_id_from_alloc(regionalready)].length;
                 break;
             }
+            #define TRACE_ALLOC
+            #ifdef TRACE_ALLOC
+            mprintf("Allocation at %x with a length of %iB created by %s\n",address,size,module);
+            #endif
             memory_allocation_table[i].allocated = true;
             memory_allocation_table[i].start = address;
             memory_allocation_table[i].length = size;
