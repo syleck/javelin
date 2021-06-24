@@ -107,15 +107,17 @@ int kernel_main(uint32_t bleax, uint32_t blebx) {
 	asm("sti");
 	char inputLine[255];
 	device_t* kb = get_device_byname("kbd");
+	printf("No shell loaded, running integrated shell\n");
 	for(;;) {
+		printf("> ");
 		inputLine[254] = '\0';
-		if(kb)
-			kb->io.read_stream(inputLine,255);
-		else {
-			printf("keyboard device not found");
-			return 1;
+		kb->io.read_stream(inputLine,255);
+		printf("\n");
+		if(strcmp(inputLine,"ExitKernel")==0) {
+			return 0;
+		} else if(strcmp(inputLine,"PanicTest")==0) {
+			interrupt(3);
 		}
-		printf("%s\n",inputLine);
 		sleep(1);
 	}
 	return 0;
