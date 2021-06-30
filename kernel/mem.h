@@ -5,6 +5,7 @@
 #include "module.h"
 
 void* kmalloc(size_t size, char* module);
+void meminit();
 /**
  * @brief Wrapper for kmalloc. Automatically manages __MODULE_NAME.
  * 

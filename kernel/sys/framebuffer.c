@@ -31,6 +31,10 @@ void fb_clear() {
  
 void putpixel(unsigned char* screen, int x, int y, int color) {
     unsigned where = x*4 + y*c_res_x;
+    if(where > 0xFE000000)
+        return;
+    if(where > framebuffer)
+        return;
     screen[where] = color & 255;              // BLUE
     screen[where + 1] = (color >> 8) & 255;   // GREEN
     screen[where + 2] = (color >> 16) & 255;  // RED
@@ -96,8 +100,6 @@ void fbupdate() {
         tga = tga_parse(tga_header+sizeof(tga_header_t),get_info(SYSINFO_ICON_END-SYSINFO_ICON_START));
         draw_icon(c_res_x-100,0,tga[0],tga[1],tga+2);
     }*/
-
-    CONSOLE_WIDTH = c_res_x/CHAR_WIDTH;
-    CONSOLE_HEIGHT = c_res_y/CHAR_HEIGHT;
+    
     printf("%ix%ix%i\n",c_res_x,c_res_y,c_bpp);    
 }

@@ -7,6 +7,8 @@
 typedef struct {
     // window, x, y, string
     void (*drawtext)(void*, int, int, char*);
+    // window, x, y, char
+    void (*drawchar)(void*, int, int, char);
     // window, x, y, color
     void (*putpixel)(void*, int, int, int);
     // window, x, y, length, width, data

@@ -32,10 +32,12 @@ enum sysinfo_entry {
 
     SYSINFO_MEM_LOAD,
     SYSINFO_MEM_LENGTH,
+
+    SYSINFO_TTY_MEMADDR,
 };
 
-void set_info(uint32_t a, uint32_t v);
-uint32_t get_info(uint32_t a);
+void set_info(uint32_t a, uint64_t v);
+uint64_t get_info(uint32_t a);
 void trigger_update();
 void set_state(enum system_state ns);
 enum system_state get_state();

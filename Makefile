@@ -1,6 +1,8 @@
 QEMUARGS := -d "cpu_reset,guest_errors"
 
 javelin.iso: static/grub.cfg static/isoroot/* bin/javelin.bin bin/shell.elf bin/elf2jprog
+	@echo "Determining if grub multiboot"
+	grub-file --is-x86-multiboot2 bin/javelin.bin
 	rm -rf iso
 	mkdir -p iso/boot/grub
 	mkdir -p iso/bin

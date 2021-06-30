@@ -16,8 +16,6 @@ $(TARGET_DIR)/$(TARGET_OBJECT): $(KERNEL_OBJECTS) KernelLink.ld
 	@echo "Building kernel $(KERNELBUILD_ID) on $(BUILDDATE)"
 	@i686-elf-gcc -T KernelLink.ld -fno-omit-frame-pointer -o bin/javelin.bin -ffreestanding -O2 -nostdlib $(KERNEL_OBJECTS) -lgcc
 	@echo "$(KERNEL_OBJECTS) -> $(TARGET_DIR)/$(TARGET_OBJECT)"
-	@echo "Determining if grub multiboot"
-	grub-file --is-x86-multiboot2 bin/javelin.bin
 	
 disassemble: $(KERNEL_DISASMS)
 

@@ -9,15 +9,15 @@ extern int terminal_col;
 
 #define TERM_COLOR 0x87
 #define TERM_SCLOR 0x9F
-extern int CONSOLE_HEIGHT;
-extern int CONSOLE_WIDTH;
+#define CONSOLE_HEIGHT 60
+#define CONSOLE_WIDTH 90
 #define VGAVIDEO_PTR  0x00000
-#define VIDEO_POINTER 0xfd000000
 
 void init_tty();
 void add_echo_tty(io_struct* str);
 void update_cursor(int x, int y);
 void tty_setcolor(uint8_t c);
 void tty_refresh();
+void tty_clear();
 
 #endif

@@ -25,6 +25,7 @@
 #include "sys/dis/wm.h"
 #include "sys/state.h"
 #include "module.h"
+#include "mem.h"
 
 MODULE("KERNEL");
 MODULE_CREATOR("kernelvega");
@@ -104,12 +105,12 @@ int kernel_main(uint32_t bleax, uint32_t blebx) {
 	//init_sound();
 	init_wm();
 	dbg_show_malloc_count();
+	char* inputLine = malloc(255);
 	asm("sti");
-	char inputLine[255];
-	device_t* kb = get_device_byname("kbd");
-	printf("No shell loaded, running integrated shell\n");
+	/*device_t* kb = get_device_byname("kbd");
+	printf("No shell loaded, running integrated shell\n");*/
 	for(;;) {
-		printf("> ");
+		/*printf("> ");
 		inputLine[254] = '\0';
 		kb->io.read_stream(inputLine,255);
 		printf("\n");
@@ -117,7 +118,7 @@ int kernel_main(uint32_t bleax, uint32_t blebx) {
 			return 0;
 		} else if(strcmp(inputLine,"PanicTest")==0) {
 			interrupt(3);
-		}
+		}*/
 		sleep(1);
 	}
 	return 0;

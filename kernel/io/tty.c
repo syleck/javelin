@@ -4,6 +4,7 @@
 #include "../stdlib.h"
 #include "../x86/asm.h"
 #include "serial.h"
+#include "../sys/state.h"
 #include "../sys/framebuffer.h"
 #include <stdbool.h>
 
@@ -20,6 +21,7 @@ bool term_init = false;
 
 int terminal_row = 0;
 int terminal_col = 0;
+uint16_t VIDEO_POINTER;
 
 #define VIDEO_PTRFROMXY(x,y) \
     ((uint16_t*)VIDEO_POINTER)[x + 80 * y]
@@ -29,7 +31,6 @@ int echo_ttyc = 0;
 uint8_t term_color = TERM_COLOR;
 
 void tty_scroll() {
-    /*
     CHKTERM()
     terminal_row = CONSOLE_HEIGHT-1;
     uint16_t terminal_buffer[(CONSOLE_HEIGHT*CONSOLE_WIDTH)+CONSOLE_WIDTH];
@@ -41,13 +42,12 @@ void tty_scroll() {
     terminal_row = orow;
     terminal_col = ocol;
     memcpy(VIDEO_POINTER-(CONSOLE_WIDTH*2),terminal_buffer,(CONSOLE_HEIGHT*CONSOLE_WIDTH)*2);
-    if(text_mode) {
+    /*if(text_mode) {
         for(int i = 0; i < CONSOLE_WIDTH; i++) {
             // clear the scheduler line
             *((uint16_t*)VIDEO_POINTER+i) = TERM_SCLOR<<8;
         }
-    }
-    */
+    }*/
 }
 
 void tty_setcolor(uint8_t c) {
@@ -55,17 +55,12 @@ void tty_setcolor(uint8_t c) {
 }
 
 void tty_clear() {
-    /*
     CHKTERM()
     if(text_mode) {
         for(int i = 0; i < (CONSOLE_HEIGHT*CONSOLE_WIDTH)*2; i++) {
             *((uint16_t*)VIDEO_POINTER+i) = term_color<<8;
         }
-        for(int i = 0; i < CONSOLE_WIDTH; i++) {
-            // clear the scheduler line
-            *((uint16_t*)VIDEO_POINTER+i) = TERM_SCLOR<<8;
-        }
-    }*/
+    }
     terminal_row = 0;
     terminal_col = 0;
 }
@@ -87,8 +82,8 @@ void tty_putch(char i) {
     if(terminal_row >= CONSOLE_HEIGHT) {
         tty_scroll();
     }
-    //VIDEO_PTRFROMXY(terminal_col,terminal_row) = ch;
-    drawchar(i,terminal_col*CHAR_WIDTH,terminal_row*CHAR_HEIGHT,0xffffff,0x606060);
+    VIDEO_PTRFROMXY(terminal_col,terminal_row) = ch;
+    //drawchar(i,terminal_col*CHAR_WIDTH,terminal_row*CHAR_HEIGHT,0xffffff,0x606060);
     if(terminal_row != 0)
         write_serial(i);
     for(int i = 0; i < echo_ttyc; i++) {
@@ -168,7 +163,9 @@ void add_echo_tty(io_struct* str) {
 void init_tty() {
     term_init = true;
     tty_handle = &tty;
+    VIDEO_POINTER = kmalloc(CONSOLE_HEIGHT*CONSOLE_WIDTH*2,"TerminalBuffer");
     tty_clear();
+    set_info(SYSINFO_TTY_MEMADDR, VIDEO_POINTER);
     int d = add_simple_text("tty0",tty);
     add_alias(get_device(d),"tty");
     terminal_row = 1;

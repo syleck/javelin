@@ -1,6 +1,7 @@
 #include "wm.h"
 #include "../framebuffer.h"
 #include "../../string.h"
+#include "term.h"
 #include <stddef.h>
 
 window *windows[1024];
@@ -23,6 +24,10 @@ void wtk_drawtext(window* window, int x, int y, char* text) {
         }
         p += CHAR_WIDTH + system_style.text_padding;
     }
+}
+
+void wtk_drawchar(window* window, int x, int y, char text) {
+    drawchar(text,window->x+x,window->y+y,0x000000,0xffffff);
 }
 
 // helper to do it without wtk
@@ -67,10 +72,12 @@ window* create_about() {
 void init_wm() {
     toolkit.drawtext = wtk_drawtext;
     toolkit.putpixel = wtk_putpixel;
+    toolkit.drawchar = wtk_drawchar;
 
     system_style.text_padding = 0;
     
     new_window(create_about());
+    new_window(term_create());
 }
 
 void new_window(window* win) {
@@ -90,6 +97,9 @@ void repaint_all() {
             drawtext(tasklc,0,windows[i]->title);
             tasklc += (strlen(windows[i]->title)+1)*CHAR_WIDTH;
             drawtext(tasklc-CHAR_WIDTH,0," ");
+            toolkit.drawtext = wtk_drawtext;
+            toolkit.drawchar = wtk_drawchar;
+            toolkit.putpixel = wtk_putpixel;
             windows[i]->toolkit = &toolkit;
 
             if(!windows[i]->drawnonce) {

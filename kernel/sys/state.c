@@ -1,19 +1,19 @@
 #include "state.h"
 
 enum system_state system_state = SYSTEM_NORMAL;
-uint32_t sysinfo[512];
+uint64_t sysinfo[512];
 
 void init_info(void* ad) {
 
 }
 
-void set_info(uint32_t a, uint32_t v) {
+void set_info(uint32_t a, uint64_t v) {
     if(sysinfo == 0)
         init_info(0);
     sysinfo[a] = v;
 }
 
-uint32_t get_info(uint32_t a) {
+uint64_t get_info(uint32_t a) {
     if(sysinfo == 0)
         init_info(0);
     return sysinfo[a];
