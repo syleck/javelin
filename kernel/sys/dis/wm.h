@@ -28,6 +28,8 @@ typedef struct window_t {
     bool visible;
     bool drawnonce;
 
+    void* bitmap;
+
     // provided by wm
     window_toolkit* toolkit;
     // window

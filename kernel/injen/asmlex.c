@@ -10,17 +10,6 @@ MODULE_CREATOR("kernelvega");
 MODULE_CONTACT("watergatchi@protonmail.com");
 MODULE_LICENSE("AGPL");
 
-void insinstructionxy(int* c, int i, int x, int y) {
-    insinstruction(c,i);
-    insinstruction(c,x);
-    insinstruction(c,y);
-}
-
-void insinstructionx(int* c, int i, int x) {
-    insinstruction(c,i);
-    insinstruction(c,x);
-}
-
 int offst = 0;
 /**
  * @brief Insert instruction/data
@@ -33,6 +22,19 @@ void insinstruction(int* c, int i) {
     *(c+offst) = i;
     offst++;
 }
+
+
+void insinstructionxy(int* c, int i, int x, int y) {
+    insinstruction(c,i);
+    insinstruction(c,x);
+    insinstruction(c,y);
+}
+
+void insinstructionx(int* c, int i, int x) {
+    insinstruction(c,i);
+    insinstruction(c,x);
+}
+
 
 #define STRCMP(x,y) (strcmp(token,"")==0)
 
@@ -67,7 +69,8 @@ void* asmcompile(int* size, char* code) {
             code[i] = ' ';
     }
 
-    char* token = __strtok_r(code, " ", &saveptr);
+    char* token = 0;
+    //__strtok_r(code, " ", &saveptr);
     int tokenc;
     int bytes;
     while(token != NULL) {
@@ -93,13 +96,13 @@ void* asmcompile(int* size, char* code) {
         }
 
         if(tokentype == Misc) {
-            token = __strtok_r(NULL, " ", &saveptr);
+            //token = __strtok_r(NULL, " ", &saveptr);
             continue;
         }
 
 
 
-        token = __strtok_r(NULL, " ", &saveptr);
+        //token = __strtok_r(NULL, " ", &saveptr);
     }
     offst = 0;
     int tmpoffst = 0;

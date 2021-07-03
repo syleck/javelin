@@ -33,39 +33,39 @@ void vfprintf(io_struct* handle, const char* fmt, va_list varg) {
             switch(*fmt) {
                 case 's':
                     string = va_arg(varg,char*);
-                    handle->write_stream(string,strlen(string));
+                    handle->write_stream(string,strlen(string),handle);
                     control_mode = false;
                     break;
                 case 'i':
                     c = va_arg(varg, int);
 					itoa(c, 10, str);
-					handle->write_stream(str,strlen(str));
+					handle->write_stream(str,strlen(str),handle);
                     control_mode = false;
                     break;      
                 case 'x':
                 	c = va_arg(varg, int);
 					itoa(c, 16, str);
-					handle->write_stream(str,strlen(str));
+					handle->write_stream(str,strlen(str),handle);
                     control_mode = false;
                     break;
                 case 'b':
                 	c = va_arg(varg, int);
 					itoa(c, 2, str);
-					handle->write_stream(str,strlen(str));
+					handle->write_stream(str,strlen(str),handle);
                     control_mode = false;
                     break;
                 case 'c':
-                    handle->write_byte(va_arg(varg, char));
+                    handle->write_byte(va_arg(varg, char),handle);
                     control_mode = false;
                     break;
                 case '%':
-                    handle->write_byte('%');
+                    handle->write_byte('%',handle);
                     control_mode = false;
                     break;
                 default:
 	                OOPS("Printf is printing unknown character");
-                    handle->write_byte('%');
-                    handle->write_byte(*fmt);
+                    handle->write_byte('%',handle);
+                    handle->write_byte(*fmt,handle);
                     control_mode = false;
                     break;
             }
@@ -73,7 +73,7 @@ void vfprintf(io_struct* handle, const char* fmt, va_list varg) {
             if(*fmt=='%') {
                 control_mode = true;
             } else {
-                handle->write_byte(*fmt);
+                handle->write_byte(*fmt,handle);
             }
         }
         fmt++;

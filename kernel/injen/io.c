@@ -34,7 +34,7 @@ void injen_out(int* permissions, int address, int data) {
     }
     switch(address){
         case IO_PORT(0): // Terminal data
-            port1_tty_control_state.current_tty->write_byte(data);
+            port1_tty_control_state.current_tty->write_byte(data,port1_tty_control_state.current_tty);
             break;
         case IO_PORT(1): // Terminal control
             if(*permissions > 1) {

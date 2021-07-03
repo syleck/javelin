@@ -2,9 +2,10 @@ ENTRY(_start)
 SECTIONS
 {
 	. = 1M;
-
 	_kernel_start = .;
-	.multiboot BLOCK (4K) : ALIGN (4K) {		
+
+	.text BLOCK(4K) : ALIGN(4K)
+	{
 		*(.multiboot)
 		. = ALIGN(8);
 		KEEP(*(.multiboot))
@@ -14,27 +15,27 @@ SECTIONS
 		*(.multiboot.text)
 		. = ALIGN(8);
 		KEEP(*(.multiboot.text))
-	}
-	. += 0xC0000000;
-	.text ALIGN (4K) : AT(ADDR(.text)-0xC0000000)
-	{
+		_DATA_START_ADDR = .;
 		*(.text)
 	}
 
-	.rodata BLOCK(4K) : AT (ADDR (.rodata) - 0xC0000000) ALIGN (4K)
+	.rodata BLOCK(4K) : ALIGN(4K)
 	{
 		*(.rodata)
 	}
 
-	.data BLOCK(4K) : AT (ADDR (.data) - 0xC0000000) ALIGN (4K)
+	.data BLOCK(4K) : ALIGN(4K)
 	{
+		_DATA_START_ADDR = .;
 		*(.data)		
+		_DATA_END_ADDR = .;
 	}
 
-	.bss BLOCK(4K) : AT (ADDR (.bss) - 0xC0000000) ALIGN (4K)
+	.bss BLOCK(4K) : ALIGN(4K)
 	{
 		*(.COMMON)
 		*(.bss)
+		_BSS_END_ADDR = .;
 	}
 	_kernel_end = .;
 }

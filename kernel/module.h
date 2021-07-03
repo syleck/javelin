@@ -14,6 +14,10 @@ int panic(char* reason);
 #define DVERBOSE(x) 
 #endif
 
+#ifndef MOD_FUNC_DETERMINE
+#define MOD_FUNC_DETERMINE __func__
+#endif
+
 #ifndef ONT_DO_MODULES
 /**
  * @brief Sets the module name.
@@ -39,12 +43,18 @@ int panic(char* reason);
  * @brief Printf wrapper for modules.
  * 
  */
-#define mprintf( s, ... ) { printf("[%s] ", __MODULE_NAME); printf(s,__VA_ARGS__); }
+#ifndef O_NOT_PRINTFUNCNAMES
+#define mprintf( s, ... ) { printf("[%s] %s: " s, __MODULE_NAME, MOD_FUNC_DETERMINE, __VA_ARGS__); }
 /**
  * @brief Puts wrapper for modules.
  * 
  */
-#define mputs(s) { printf("[%s] %s", __MODULE_NAME, s); }
+#define mputs(s) { printf("[%s] %s: %s", __MODULE_NAME, MOD_FUNC_DETERMINE, s); }
+#else
+#define mprintf( s, ... ) { printf("[%s] ONP: " s, __MODULE_NAME, __VA_ARGS__); }
+
+#define mputs(s) { printf("[%s] ONP: %s", __MODULE_NAME, s); }
+#endif
 /**
  * @brief Dump module information.
  * 

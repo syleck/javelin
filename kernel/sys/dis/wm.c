@@ -1,13 +1,23 @@
 #include "wm.h"
 #include "../framebuffer.h"
 #include "../../string.h"
+#include "../../module.h"
+#include "../../mem.h"
+#include "../state.h"
 #include "term.h"
 #include <stddef.h>
+
+MODULE("WINDOWMANAGER")
+MODULE_CREATOR("kernelvega");
+MODULE_CONTACT("watergatchi@protonmail.com");
+MODULE_LICENSE("AGPL");
 
 window *windows[1024];
 window_toolkit toolkit;
 struct {
     int text_padding;
+    int fgcolor;
+    int bgcolor;
 } system_style;
 int windowc = 0;
 int repaint_tries = 0;
@@ -17,7 +27,7 @@ int repaint_tries = 0;
 void wtk_drawtext(window* window, int x, int y, char* text) {
     int p = 0;
     while(*text!=0) {
-        drawchar(*text,window->x+x+p,window->y+y,0x000000,0xffffff);
+        window->toolkit->drawchar(window,x+p,y,*text);
         text++;
         if(p > window->w) {
             p = 0;
@@ -26,8 +36,22 @@ void wtk_drawtext(window* window, int x, int y, char* text) {
     }
 }
 
-void wtk_drawchar(window* window, int x, int y, char text) {
-    drawchar(text,window->x+x,window->y+y,0x000000,0xffffff);
+void wtk_drawchar(window* window, int x, int y, char text) {    
+    int cx,cy;
+    int mask[]={1,2,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384};
+    unsigned char *gylph=get_info(SYSINFO_TEXT_FBFONT_START)+(int)text*CHAR_HEIGHT;
+    x+=CHAR_WIDTH-1;
+    bool snc = false;
+
+    if(system_style.bgcolor == 0) {
+        snc = true;
+    }
+
+    for(cy=0;cy<CHAR_HEIGHT;cy++){
+        for(cx=CHAR_WIDTH-1;cx>=0;cx--){
+            putpixel(window->bitmap,x-cx,y+cy,gylph[cy]&mask[cx]?system_style.fgcolor:system_style.bgcolor);
+        }
+    }
 }
 
 // helper to do it without wtk
@@ -83,8 +107,7 @@ void init_wm() {
 void new_window(window* win) {
     printf("New window: %s, at %x\n",win->title,win);
     windows[windowc] = win;
-    win->h *= CHAR_HEIGHT;
-    win->w *= CHAR_WIDTH;
+    win->bitmap = malloc(win->w*win->h);
     windowc++;
 }
 
@@ -117,6 +140,7 @@ void repaint_all() {
             
             windows[i]->toolkit->drawtext(windows[i],0,-9,windows[i]->title);
             windows[i]->repaint(windows[i]);
+            draw_icon(windows[i]->x,windows[i]->y,windows[i]->w,windows[i]->h,windows[i]->bitmap);
         }
     }
     repaint_tries++;

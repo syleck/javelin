@@ -1,11 +1,13 @@
-QEMUARGS := -d "cpu_reset,guest_errors"
+KERNEL_VERSION	:= \"0.1.2-$(shell uuidgen -t)\"
+QEMUARGS		:= -m 2G
 
-javelin.iso: static/grub.cfg static/isoroot/* bin/javelin.bin bin/shell.elf bin/elf2jprog
+javelin.iso: static/grub.cfg static/isoroot/* bin/javelin.bin bin/shell.elf bin/elf2jprog udevprojs
 	@echo "Determining if grub multiboot"
 	grub-file --is-x86-multiboot2 bin/javelin.bin
 	rm -rf iso
 	mkdir -p iso/boot/grub
 	mkdir -p iso/bin
+	cp udevs/*.dev iso/
 	cp -r bin/javelin.bin iso/boot/javelin.bin
 	cp -r bin/shell.elf iso/bin/shell.elf
 #	cp bin/fsdrv.bin iso/fsdrv.bin
@@ -13,6 +15,7 @@ javelin.iso: static/grub.cfg static/isoroot/* bin/javelin.bin bin/shell.elf bin/
 	cp -r kernel iso/src
 	cp -r static/isoroot iso/
 	grub-mkrescue -o javelin.iso iso
+	@echo JAVELIN version $(KERNEL_VERSION) finished compiling!
 
 .PHONY: all
 all: javelin.iso
@@ -35,16 +38,21 @@ clean:
 	@make -f KernelMakefile.mk clean $(ARGS)
 	@make -f ShellMakefile.mk clean $(ARGS)
 	@make -f Elf2JprogMake.mk clean $(ARGS)
+	@cd udevs && make -f Makefile clean $(ARGS)
+	rm -rf iso
 #	make -j4 -f FSDrvMakefile.mk clean $(ARGS)
 
 bin/shell.elf: FORCE
-	@make -j4 -f ShellMakefile.mk $(ARGS)
+	@make KERNEL_VERSION=$(KERNEL_VERSION) -f ShellMakefile.mk $(ARGS)
 
 bin/javelin.bin: FORCE
-	@make -j4 -f KernelMakefile.mk $(ARGS)
+	@make KERNEL_VERSION=$(KERNEL_VERSION) -f KernelMakefile.mk $(ARGS)
 
 bin/elf2jprog: FORCE
-	@make -j4 -f Elf2JprogMake.mk $(ARGS)
+	@make KERNEL_VERSION=$(KERNEL_VERSION) -f Elf2JprogMake.mk $(ARGS)
+
+udevprojs:	FORCE
+	@cd udevs && make KERNEL_VERSION=$(KERNEL_VERSION) -f Makefile $(ARGS)
 
 .PHONY: FORCE
 FORCE:

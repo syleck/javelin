@@ -5,8 +5,15 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include "../x86/int/irq.h"
+#include "../module.h"
+
+MODULE("FRAMEBUFFER")
+MODULE_CREATOR("kernelvega");
+MODULE_CONTACT("watergatchi@protonmail.com");
+MODULE_LICENSE("AGPL");
 
 uint32_t* framebuffer;
+int fblen;
 int c_res_x = 0;
 int c_res_y = 0;
 int CONSOLE_WIDTH = 80;
@@ -31,10 +38,10 @@ void fb_clear() {
  
 void putpixel(unsigned char* screen, int x, int y, int color) {
     unsigned where = x*4 + y*c_res_x;
-    if(where > 0xFE000000)
+    /*if(where > framebuffer+fblen)
         return;
-    if(where > framebuffer)
-        return;
+    if(where < framebuffer)
+        return;*/
     screen[where] = color & 255;              // BLUE
     screen[where + 1] = (color >> 8) & 255;   // GREEN
     screen[where + 2] = (color >> 16) & 255;  // RED
@@ -47,6 +54,10 @@ void fillrect(unsigned char *vram, int x, int y, unsigned char r, unsigned char 
     for (i = 0; i < w; i++) {
         for (j = 0; j < h; j++) {
             //putpixel(vram, 64 + j, 64 + i, (r << 16) + (g << 8) + b);
+            /*if(where > framebuffer+fblen)
+                continue;
+            if(where < framebuffer)
+                continue;*/
             where[j*4] = r;
             where[j*4 + 1] = g;
             where[j*4 + 2] = b;
@@ -74,6 +85,15 @@ void drawchar(unsigned char c, int x, int y, int fgcolor, int bgcolor)
 	}
 }
 
+void drawstring(unsigned char* c, int x, int y, int fgcolor, int bgcolor) {
+    int p = 0;
+    while(*c!=0) {
+        drawchar(*c,x+p,y,fgcolor,bgcolor);
+        c++;
+        p += CHAR_WIDTH;
+    }
+}
+
 void draw_icon(int x, int y, int w, int h, int *pixels) {
     int j = 0;
     for (int l = 0; l < h; l++) {
@@ -89,6 +109,7 @@ void fbupdate() {
     c_res_y = get_info(SYSINFO_VIDEO_RESY);
     c_bpp = get_info(SYSINFO_VIDEO_BPP);
     c_pitch = get_info(SYSINFO_VIDEO_PITCH);
+    fblen = c_res_x*c_res_y*c_bpp*c_pitch;
     tty_clear();
     font = vincent_data;
     if(get_info(SYSINFO_TEXT_FBFONT_START)) {

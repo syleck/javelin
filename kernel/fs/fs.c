@@ -9,30 +9,26 @@ MODULE_CREATOR("kernelvega");
 MODULE_CONTACT("watergatchi@protonmail.com");
 MODULE_LICENSE("AGPL");
 
-filesystem *filesystems[8192];
-
-// URI:
-// filesy/path/dir/file.txt
-struct uri decode_uri(char* url) {
-    struct uri ur;
-    char device[7];
-    memcpy(device,url,6); 
-    for(int i = 0; i < filesystems; i++) {
-        if(strcmp(device,filesystems[i]->name) == 0) {
-            ur.fs = filesystems[i];
-        }
-    }
-    ur.path = malloc(strlen(url)-6);
-    memcpy(ur.path,url+6,strlen(url)-6);
-    mprintf("\"%s\" -> %s on %s (%s)",url,ur.path,ur.fs->name,device);
-}
-
-fs_path decode_path(char* path) {
-
-}
+#define MAX_FILESYSTEMS 8192
+filesystem *filesystems[MAX_FILESYSTEMS];
+filesystem* nullfs;
+int filesystemc = 0;
 
 void* fopen(char* path) {
-    struct uri ur = decode_uri(path);
-    fs_path pth = decode_path(ur.path);
     
+
+}
+
+void add_fs(filesystem* fs) {
+    mprintf("new filesystem: %s\n",fs->name);
+    filesystems[filesystemc++] = fs;
+}
+
+void initfs() {
+    for(int i = 0; i < MAX_FILESYSTEMS; i++) {
+        filesystems[i] = 0;
+    }
+    nullfs = malloc(sizeof(filesystem));
+    memcpy(nullfs->name,"nullfs",7);
+    add_fs(nullfs);
 }

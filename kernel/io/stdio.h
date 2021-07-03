@@ -14,12 +14,12 @@ typedef enum {
     IO_OUTPUT,
 } io_mode;
 
-typedef struct {
-    void (*write_byte)(char i);
-    char (*read_byte)();
-    void (*write_stream)(void* s, int l);
-    int (*read_stream)(void* s, int l);
-    int (*get_available)();
+typedef struct io_struct_t {
+    void (*write_byte)(char i, struct io_struct_t* c);
+    char (*read_byte)(struct io_struct_t* c);
+    void (*write_stream)(void* s, int l, struct io_struct_t* c);
+    int (*read_stream)(void* s, int l, struct io_struct_t* c);
+    int (*get_available)(struct io_struct_t* c);
     io_mode cmode;
 } io_struct;
 

@@ -9,8 +9,8 @@ extern int terminal_col;
 
 #define TERM_COLOR 0x87
 #define TERM_SCLOR 0x9F
-#define CONSOLE_HEIGHT 60
-#define CONSOLE_WIDTH 90
+#define CONSOLE_HEIGHT 43
+#define CONSOLE_WIDTH 132
 #define VGAVIDEO_PTR  0x00000
 
 void init_tty();

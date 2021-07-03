@@ -3,11 +3,14 @@
 #include <stdint.h>
 
 enum system_state {
+    SYSTEM_BOOTING,
     SYSTEM_NORMAL,
     SYSTEM_IRQ,
     SYSTEM_ISR,
     SYSTEM_PANIC,
     SYSTEM_MONITOR,
+    UDEV_INIT,
+    UDEV_CODE,
 };
 
 
@@ -34,6 +37,9 @@ enum sysinfo_entry {
     SYSINFO_MEM_LENGTH,
 
     SYSINFO_TTY_MEMADDR,
+
+    SYSINFO_BOOTLOADER_NAME,
+    SYSINFO_BOOT_COMMANDLINE,
 };
 
 void set_info(uint32_t a, uint64_t v);

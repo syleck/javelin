@@ -1,6 +1,8 @@
 #include "grub.h"
 #include "../../sys/state.h"
+#include "../../drv/udriverapi.h"
 #include "../../module.h"
+#include "../../mem.h"
 #include <stdbool.h>
 #include "mbtag.h"
 
@@ -15,6 +17,7 @@ void multiboot_init(uint32_t eax, uint32_t ebx) {
     mprintf("Boot EAX: %x, EBX %x\n",eax,ebx);
     if(eax != 0x36d76289) {
         DVERBOSE(mprintf("Not loaded through a valid multiboot2 bootloader, aborting (EAX = %x)\n",eax));
+        return;
     }
     struct multiboot_tag *header = (void*)ebx;
     mprintf("Header size: %x, Reserved: %x\n", header->type, header->size);
@@ -28,19 +31,29 @@ void multiboot_init(uint32_t eax, uint32_t ebx) {
         switch(current_tag->tag.type) {
             case 1: // boot command line
                 mprintf("Command line: %s\n",current_tag->string.string);
+                set_info(SYSINFO_BOOT_COMMANDLINE,current_tag->string.string);
                 break;
             case 2: // boot loader name
                 mprintf("Bootloader: %s\n",current_tag->string.string);
+                set_info(SYSINFO_BOOTLOADER_NAME,current_tag->string.string);
                 break;
             case 3: // module
-                mprintf("Module %s (%x)\n",current_tag->module.cmdline,current_tag->module.mod_start);
+                mprintf("Module %s (%x), size %iB\n",current_tag->module.cmdline,current_tag->module.mod_start,current_tag->module.mod_end-current_tag->module.mod_start);
+                void* new_mod_start = malloc(current_tag->module.mod_end-current_tag->module.mod_start);
+                void* new_mod_end = new_mod_start + (current_tag->module.mod_end-current_tag->module.mod_start);
+                memcpy(new_mod_start,current_tag->module.mod_start,new_mod_end-new_mod_start);
                 if(strcmp(current_tag->module.cmdline,"font")==0) {
-                    set_info(SYSINFO_TEXT_FBFONT_START,current_tag->module.mod_start);
-                    set_info(SYSINFO_TEXT_FBFONT_END,current_tag->module.mod_end);
+                    set_info(SYSINFO_TEXT_FBFONT_START,new_mod_start);
+                    set_info(SYSINFO_TEXT_FBFONT_END,new_mod_end);
                 } else if(strcmp(current_tag->module.cmdline,"icon")==0) {
-                    set_info(SYSINFO_ICON_START,current_tag->module.mod_start);
-                    set_info(SYSINFO_ICON_END,current_tag->module.mod_end);
+                    set_info(SYSINFO_ICON_START,new_mod_start);
+                    set_info(SYSINFO_ICON_END,new_mod_end);
+                } else if(strcmp(current_tag->module.cmdline,"udevs")==0) {
+                    
+                } else if(strcmp(current_tag->module.cmdline,"udev")==0) {
+                    udriver_initd(new_mod_start);
                 }
+                mprintf("Reloaded at %x\n",new_mod_start);
                 break;
             case 4: // memory information
                 mprintf("memory information\nlowmem: %ikB, himem: %ikB\n",current_tag->meminfo.mem_lower,current_tag->meminfo.mem_upper);

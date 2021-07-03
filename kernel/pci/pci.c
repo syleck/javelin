@@ -2,6 +2,7 @@
 #include "../x86/asm.h"
 #include "../module.h"
 #include "../drv/device.h"
+#include "../drv/udriverapi.h"
 #include "../string.h"
 #include "../stdlib.h"
 #include "../mem.h"
@@ -166,6 +167,7 @@ void pci_probe()
                         vendorname = "Unknown";
                         break;
                 }
+                udriver_hit(PCI_INTERCEPT,0x01,vendor,device,jdev,pdev,bus,slot,function,pdev->base.class,pdev->base.subclass);
                 DVERBOSE(mprintf("vendor: %s (0x%x) device: 0x%x name: %s header: %i\n    class: 0x%x subclass: 0x%x\n    bus: 0x%x slot: 0x%x function 0x%x\n", vendorname, vendor, device, jdev->name, pdev->base.header_type, pdev->base.class, pdev->base.subclass, bus, slot, function));
                 add_pci_device(pdev);
             }

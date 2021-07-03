@@ -10,6 +10,20 @@ MODULE_CONTACT("watergatchi@protonmail.com");
 MODULE_LICENSE("AGPL");
 
 bool panicState = false;
+
+void monitor() {
+    printf("SYSTEM MONITOR\n");
+    bool state = true;
+    while(state) {
+        char input[16];
+        read_string(input,16);
+        if(strcmp(input,"ExitPanic")==0) {
+            panicState = false;
+            printf("EXPERIMENTAL\n");
+        }
+    }
+}
+
 int panic(char* reason) {
     set_state(SYSTEM_PANIC);
     mputs("System is in a panicked state\n");
@@ -27,19 +41,6 @@ int panic(char* reason) {
         char i = get_key();
         if(i == 'r') {
             monitor();
-        }
-    }
-}
-
-void monitor() {
-    printf("SYSTEM MONITOR\n");
-    bool state = true;
-    while(state) {
-        char input[16];
-        read_string(input,16);
-        if(strcmp(input,"ExitPanic")==0) {
-            panicState = false;
-            printf("EXPERIMENTAL\n");
         }
     }
 }

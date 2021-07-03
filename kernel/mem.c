@@ -36,6 +36,8 @@ void dbg_show_malloc_count() {
     for(int i = 0; i < 8192; i++) {
         if(memory_allocation_table[i].allocated) {
             mprintf("%s Memory allocation from %x to %x (size, %i)\n",memory_allocation_table[i].module,memory_allocation_table[i].start,memory_allocation_table[i].start+memory_allocation_table[i].length,memory_allocation_table[i].length);
+        } else {
+            mputs("Unallocated entry\n");
         }
     }
 }
@@ -63,17 +65,17 @@ void* kmalloc(size_t size, char* module) {
     void* address = MEMORY_START;
     for(int i = 0; i < 8192; i++) {
         if(memory_allocation_table[i].allocated == true) {
-            address += memory_allocation_table[i].length;
+            if(is_mem_alloc(address));
+                address += memory_allocation_table[i].length;
         } else {
             void* regionalready = is_mem_alloc(address);
             if(regionalready) {
                 address += memory_allocation_table[get_id_from_alloc(regionalready)].length;
-                break;
+                continue;
             }
-            #define TRACE_ALLOC
-            #ifdef TRACE_ALLOC
-            mprintf("Allocation at %x with a length of %iB created by %s\n",address,size,module);
-            #endif
+            //#define TRACE_ALLOC
+            //#ifdef TRACE_ALLOC
+            //#endif
             memory_allocation_table[i].allocated = true;
             memory_allocation_table[i].start = address;
             memory_allocation_table[i].length = size;
@@ -81,6 +83,7 @@ void* kmalloc(size_t size, char* module) {
             break;
         }
     }
+    mprintf("Allocation at %x with a length of %iB created by %s\n",address,size,module);
     return address;
 }
 

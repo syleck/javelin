@@ -1,4 +1,10 @@
 #include "state.h"
+#include "../module.h"
+
+MODULE("STATE");
+MODULE_CREATOR("kernelvega");
+MODULE_CONTACT("watergatchi@protonmail.com");
+MODULE_LICENSE("AGPL");
 
 enum system_state system_state = SYSTEM_NORMAL;
 uint64_t sysinfo[512];
@@ -25,7 +31,7 @@ void trigger_update() {
 }
 
 void set_state(enum system_state ns) {
-    printf("system_state = %i\n",ns);
+    mprintf("system_state = %i\n",ns);
     system_state = ns;
 }
 

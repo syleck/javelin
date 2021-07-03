@@ -87,7 +87,7 @@ void tty_putch(char i) {
     if(terminal_row != 0)
         write_serial(i);
     for(int i = 0; i < echo_ttyc; i++) {
-        echo_ttys[i]->write_byte(i);
+        echo_ttys[i]->write_byte(i,echo_ttys[i]);
     }
     if(terminal_col++ == CONSOLE_WIDTH) {
         terminal_col = 0;

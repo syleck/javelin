@@ -20,6 +20,7 @@
 #include "drv/keyboard.h"
 #include "drv/adlib.h"
 #include "drv/sb16.h"
+#include "drv/udriverapi.h"
 #include "fs/iso9660.h"
 #include "injen/injen.h"
 #include "sys/dis/wm.h"
@@ -55,6 +56,8 @@ int kernel_main(uint32_t bleax, uint32_t blebx) {
 	init_tty();
 	init_serial();
 	init_bochs();
+
+	udriver_init();
 
 	multiboot_init(bleax,blebx);
 	fb_clear();
@@ -100,25 +103,16 @@ int kernel_main(uint32_t bleax, uint32_t blebx) {
 
 	init_keyboard();
 	pci_install();
+	initfs();
 	//init_ata_pio();
 	init_random();
 	//init_sound();
 	init_wm();
-	dbg_show_malloc_count();
-	char* inputLine = malloc(255);
 	asm("sti");
-	/*device_t* kb = get_device_byname("kbd");
-	printf("No shell loaded, running integrated shell\n");*/
+
+	set_state(SYSTEM_NORMAL);
+	dbg_show_malloc_count();
 	for(;;) {
-		/*printf("> ");
-		inputLine[254] = '\0';
-		kb->io.read_stream(inputLine,255);
-		printf("\n");
-		if(strcmp(inputLine,"ExitKernel")==0) {
-			return 0;
-		} else if(strcmp(inputLine,"PanicTest")==0) {
-			interrupt(3);
-		}*/
 		sleep(1);
 	}
 	return 0;

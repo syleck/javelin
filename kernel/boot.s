@@ -52,33 +52,11 @@ boot_page_table1:
 .global _start
 .type _start,@function
 .section .multiboot.text
-_start:
-	movl $0, %esi
-	movl $1023, %ecx
-1:  cmpl $_kernel_start, %esi
-	jl 2f
-	cmpl $(_kernel_end - 0xC0000000), %esi
-	jge 3f
-	movl %esi, %edx
-	orl $0x003, %edx
-	movl %edx, (%edi)
-2:	addl $4096, %esi
-	addl $4, %edi
-3:	jmp 1b
-	movl $(0xFD000000 | 0x003), boot_page_table1 - 0xC0000000 + 1023 * 4
-	movl $(boot_page_table1 - 0xC0000000 + 0x003), boot_page_directory - 0xC0000000 + 0
-	movl $(boot_page_table1 - 0xC0000000 + 0x003), boot_page_directory - 0xC0000000 + 768 * 4
-	movl $(boot_page_directory - 0xC0000000), %ecx
-	movl %ecx, %cr3
-	movl %cr0, %ecx
-	orl $0x80010000, %ecx
-	movl %ecx, %cr0
-	lea 4f, %ecx
-	jmp *%ecx
+_cstart:
+
+	jmp _cstart
 .section .text
-4:	movl $0, boot_page_directory + 0
-	movl %cr3, %ecx
-	movl %ecx, %cr3
+_start:
 	mov $stack_top,%esp
 	xor %ebp, %ebp
 	mov $EBP_FIELD,%ebp
@@ -86,8 +64,8 @@ _start:
 	push %eax
 	call kernel_main
 	cli
-1:	hlt
-	jmp 1b
+5:	hlt
+	jmp 5b
 
 .text
 .globl loadPageDirectory
@@ -111,3 +89,29 @@ enablePaging:
 	mov %ebp, %esp
 	pop %ebp
 	ret
+
+;	movl $0, %esi
+;	movl $1023, %ecx
+;1:  cmpl $_kernel_start, %esi
+;	jl 2f
+;	cmpl $(_kernel_end - 0xC0000000), %esi
+;	jge 3f
+;	movl %esi, %edx
+;	orl $0x003, %edx
+;	movl %edx, (%edi)
+;2:	addl $4096, %esi
+;	addl $4, %edi
+;3:	jmp 1b
+;	movl $(0xFE000000 | 0x003), boot_page_table1 - 0xC0000000 + 1023 * 4
+;	movl $(boot_page_table1 - 0xC0000000 + 0x003), boot_page_directory - 0xC0000000 + 0
+;	movl $(boot_page_table1 - 0xC0000000 + 0x003), boot_page_directory - 0xC0000000 + 768 * 4
+;	movl $(boot_page_directory - 0xC0000000), %ecx
+;	movl %ecx, %cr3
+;	movl %cr0, %ecx
+;	orl $0x80010000, %ecx
+;	movl %ecx, %cr0
+;	lea 4f, %ecx
+;	jmp *%ecx
+;4:	movl $0, boot_page_directory + 0
+;	movl %cr3, %ecx
+;	movl %ecx, %cr3
